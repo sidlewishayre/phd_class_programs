@@ -1,0 +1,61 @@
+% Innovation flowchart; yellow denotes novel data and wedge boxes are neutral.
+\begin{center}
+\begin{tikzpicture}[
+    processbox/.style={
+        draw,
+        rounded corners,
+        align=center,
+        minimum width=2.3cm,
+        minimum height=0.85cm
+    },
+    measured/.style={processbox, fill=yellow!35},
+    wedgebox/.style={
+        draw,
+        align=center,
+        minimum width=2.05cm,
+        minimum height=0.75cm,
+        font=\scriptsize
+    },
+    processarrow/.style={-{Latex[length=2.5mm]}, thick},
+    wedgearrow/.style={-{Latex[length=2mm]}, thin}
+]
+
+\node[processbox] (cost) {Financial Cost\\of Capital};
+\node[measured, right=1.15cm of cost]
+    (perceived) {Perceived Cost\\of Capital};
+\node[measured, right=1.15cm of perceived]
+    (discount) {Discount\\Rate};
+\node[processbox, right=1.15cm of discount]
+    (investment) {Investment};
+
+\coordinate (mid1) at ($(cost.east)!0.5!(perceived.west)$);
+\coordinate (mid2) at ($(perceived.east)!0.5!(discount.west)$);
+
+\draw[processarrow] (cost) -- (perceived);
+\draw[processarrow] (perceived) -- (discount);
+\draw[processarrow] (discount) -- (investment);
+
+\node[wedgebox, below=0.9cm of mid1] (costwedge)
+    {Cost of Capital\\Wedge};
+\node[wedgebox, below=0.9cm of mid2] (discountwedge)
+    {Discount Rate\\Wedge};
+
+\draw[wedgearrow] (costwedge.north) -- (mid1);
+\draw[wedgearrow] (discountwedge.north) -- (mid2);
+
+\node[
+    draw,
+    fill=yellow!35,
+    minimum width=0.45cm,
+    minimum height=0.35cm,
+    below=0.55cm of discountwedge,
+    xshift=-0.85cm
+] (legendbox) {};
+\node[
+    right=0.15cm of legendbox,
+    anchor=west,
+    font=\small
+] {Novel data in paper};
+
+\end{tikzpicture}
+\end{center}

@@ -1,0 +1,90 @@
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+    scale=0.75,
+    transform shape,
+    mainbox/.style={
+        draw,
+        rounded corners,
+        align=center,
+        minimum width=2.2cm,
+        minimum height=0.9cm
+    },
+    measured/.style={
+        mainbox,
+        fill=yellow!35
+    },
+    explanation/.style={
+        draw,
+        align=center,
+        minimum width=1.9cm,
+        minimum height=0.9cm,
+        font=\small
+    },
+    wedgebox/.style={
+        explanation,
+        draw=red!75!black,
+        fill=red!15,
+        text=red!75!black,
+        very thick
+    },
+    mainarrow/.style={-{Latex[length=2.5mm]}, thick},
+    verticalarrow/.style={-{Latex[length=2mm]}, thin}
+]
+
+% Main boxes
+\node[mainbox] (cost) {Financial Cost\\of Capital};
+\node[measured, right=1.8cm of cost]
+    (perceived) {Perceived Cost\\of Capital};
+\node[measured, right=1.8cm of perceived]
+    (discount) {Discount\\Rate};
+\node[mainbox, right=1.8cm of discount]
+    (investment) {Investment};
+
+% Arrow midpoints
+\coordinate (mid1) at ($(cost.east)!0.5!(perceived.west)$);
+\coordinate (mid2) at ($(perceived.east)!0.5!(discount.west)$);
+\coordinate (mid3) at ($(discount.east)!0.5!(investment.west)$);
+
+% Main arrows
+\draw[mainarrow] (cost) -- (perceived);
+\draw[mainarrow] (perceived) -- (discount);
+\draw[mainarrow] (discount) -- (investment);
+
+% Explanatory boxes
+\node[explanation, below=1cm of mid1]
+    (measurement) {Cost of Capital\\Wedge};
+
+\node[wedgebox, below=1cm of mid2]
+    (wedge) {Discount Rate\\Wedge};
+
+\node[explanation, below=1cm of mid3]
+    (theory) {Explained by\\``Adjusted Q Theory''};
+
+% Vertical arrows
+\draw[verticalarrow] (measurement.north) -- (mid1);
+\draw[
+    -{Latex[length=2mm]},
+    draw=red!75!black,
+    thick
+] (wedge.north) -- (mid2);
+\draw[verticalarrow] (theory.north) -- (mid3);
+
+% Legend
+\node[
+    draw,
+    fill=yellow!35,
+    minimum width=0.45cm,
+    minimum height=0.35cm,
+    below=0.6cm of wedge,
+    xshift=-0.9cm
+] (legendbox) {};
+
+\node[
+    right=0.15cm of legendbox,
+    anchor=west,
+    font=\small
+] {Novel data in paper};
+
+\end{tikzpicture}
+\end{figure}

@@ -1,0 +1,27 @@
+% Wedge-free version used on the question slide.
+\begin{center}
+\begin{tikzpicture}[
+    processbox/.style={
+        draw,
+        rounded corners,
+        align=center,
+        minimum width=2.3cm,
+        minimum height=0.85cm
+    },
+    processarrow/.style={-{Latex[length=2.5mm]}, thick}
+]
+
+\node[processbox] (cost) {Financial Cost\\of Capital};
+\node[processbox, right=1.15cm of cost]
+    (perceived) {Perceived Cost\\of Capital};
+\node[processbox, right=1.15cm of perceived]
+    (discount) {Discount\\Rate};
+\node[processbox, right=1.15cm of discount]
+    (investment) {Investment};
+
+\draw[processarrow] (cost) -- (perceived);
+\draw[processarrow] (perceived) -- (discount);
+\draw[processarrow] (discount) -- (investment);
+
+\end{tikzpicture}
+\end{center}

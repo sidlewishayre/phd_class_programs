@@ -1,0 +1,294 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usetheme{Madrid}
+
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta}
+\usetikzlibrary{calc,decorations.pathreplacing}
+\usepackage{xcolor}
+\usepackage[round,authoryear]{natbib}
+\input{gormsen_huber_flowchart_short}
+
+
+\setbeamertemplate{navigation symbols}{}
+
+% Title info
+\title{Gormsen and Huber (2025)}
+\author{Siddhartha Lewis-Hayre}
+\date{\today}
+
+\begin{document}
+
+% Title slide
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{Motivation}
+    \captionsetup{font=scriptsize,skip=3pt}
+    \centering
+    \includegraphics[width=0.82\linewidth,height=0.56\textheight,keepaspectratio]{figures/pe_vs_interest_rate.png}
+
+    \captionof{figure}{P/E ratio, long-term interest rate, and realized net investment relative to capital (NI/K), each relative to its 1990--1999 average. The P/E ratio is Shiller's CAPE. Sources: Robert Shiller and US Flow of Funds accounts.}
+    \begin{itemize}
+        \item Interest rates below historic averages
+        \item Equity prices high
+        \item Yet, investment has not increased
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Motivation}
+    \captionsetup{font=tiny,skip=2pt}
+    \begin{center}
+        \includegraphics[width=0.82\linewidth,height=0.48\textheight,keepaspectratio]{figures/guitierrez_philippon_replication/gutierrez_philippon_replication_extended.png}
+        
+        \captionof{figure}{Replication of \citet{gutierrez-philippon-2017}. Regression estimated over 1990--2001; vertical dotted line marks the end of the published sample. Data from US Flow of Funds accounts.}
+        
+        \vfill
+        \begin{alertblock}{Puzzle}
+            Why has investment not increased with falling cost of capital?
+        \end{alertblock}
+    \end{center}
+
+    \citet{gutierrez-philippon-2017} argue it is partly a result of increasing market power.
+\end{frame}
+
+\begin{frame}{Question}
+
+
+\begin{alertblock}{Question}
+    How does the cost of capital affect investment?
+\end{alertblock}
+
+Firm decision making process:
+
+\input{gormsen_huber_flowchart_lte}
+
+
+\begin{itemize}
+    \item How do firms estimate cost of capital?
+    \item How do discount rates vary with perceived cost of capital?
+    \item How do discount rates affect investment?
+\end{itemize}
+
+% Builds on question from Poterba and Summers (1995): Why are reported discount rates above cost of capital?
+% \begin{itemize}
+%     \item Gormsen and Huber (2025) looks at changes in gap over time
+% \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Innovation}
+\input{gormsen_huber_flowchart_innovation}
+
+\begin{itemize}
+    \item Novel dataset
+    \begin{itemize}
+        \item Authors hand-collect new data on perceived cost of capital and discount rates
+        \item My back-of-the-envelope calculation: at one minute per paragraph, reading transcripts took at least 2,000 hours and conservatively cost \$50,000 in RA wages
+    \end{itemize}
+    \item Studies time variation in discount rate wedge within firm
+    \begin{itemize}
+        \item \citet{poterba-summers-1995} survey CEOs and find a discount rate wedge
+    \end{itemize}
+    \item Characteriziation of chain of transmission
+    \begin{itemize}
+        \item cost of capital wedge and discount rate wedge
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Results}
+\input{gormsen_huber_flowchart}
+\footnotesize
+\begin{itemize}
+    \item Discount rate wedge explains gap between financial cost of capital and investment
+    \item Wedge increased by 2.5pp between 2002 and 2021 despite declining perceived cost of capital
+    % \item 1pp increase in wedge is associated with 0.8pp decline in investment
+    \item Modelling wedge makes sensitivity of investment to changes in financial COC fall by an order of magnitude
+\end{itemize}
+
+\begin{alertblock}{Puzzle}
+    What drives changes in the discount rate wedge?
+\end{alertblock}
+
+\begin{itemize}
+    \item Authors show discount rate is sticky, but why?
+    \item Higher market power is associated with larger discount rate wedge, but explanatory power is limited
+\end{itemize}
+\end{frame}
+
+% \begin{frame}{Summary of Results}
+% \begin{itemize}
+%     \item financial cost of capital predicts perceived cost of capital
+%     \item perceived cost of capital have little short and medium term effects on discount rates
+%     \item discount rate wedge increased by 2.5pp between 2002 and 2021 despite declining perceived cost of capital
+%     \item 1pp increase in discount wedge is associated with 0.8pp drop in investment
+%     \item adjusted Q-theory explains most of missing investment
+%     \item sensitivity of investment to changes in financial cost of capital fall by an order of magnitude
+%     \item firms with high market power have maintained discount rates while increasing discount rate wedges
+% \end{itemize}    
+% \end{frame}
+
+% \begin{frame}{Data}
+%     \begin{itemize}
+%         \item Firms that report discount rates in multiple periods account for only 15\% of listed firms in Compustat
+%         \begin{itemize}
+%             \item They have only 257 observations among firms with at least two reported discount rate wedges
+%         \end{itemize}
+%         \item 
+%     \end{itemize}
+% \end{frame}
+
+\begin{frame}{Cost of Capital Wedge}
+    \shortflowchart{1}
+\end{frame}
+
+\begin{frame}{Cost of Capital Wedge}
+    \input{financial_vs_percieved_coc}
+
+\begin{itemize}
+    \item point estimates close to 1
+    \begin{itemize}
+        \item classical measurement error of financial cost of capital would create downward bias
+        % \item assuming 50pp annual return sd, implies 1pp COE measurement error, leading to 
+    \end{itemize}
+    \item $R^2$ is low
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Discount Rate Wedge}
+    \shortflowchart{2}
+\end{frame}
+
+\begin{frame}{Discount Rate Wedge}
+    \input{discount_rate_wedge.tex}
+    \begin{itemize}
+        \item Coefficients much smaller than 1 indicating slow adjustment of discount rate wedge
+        \item Stylized model makes exogeneity assumption seem reasonable
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Discount Rate Wedge}
+    \begin{columns}[c,onlytextwidth]
+        \begin{column}{0.49\textwidth}
+            \centering
+            \includegraphics[width=\linewidth,height=0.76\textheight,keepaspectratio]{figures/discount_rate_wedge.png}
+        \end{column}
+        \begin{column}{0.49\textwidth}
+            \centering
+            \includegraphics[width=\linewidth,height=0.76\textheight,keepaspectratio]{figures/discount_rate_wedge_separated.png}
+        \end{column}
+    \end{columns}
+    \begin{itemize}
+        \item Change in perceived COC has minimal short-run effect on the discount rate
+        \item Discount rate moves more slowly than perceived COC
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Discount Rate vs Investment}
+    \shortflowchart{3}
+\end{frame}
+
+\begin{frame}{Discount Rate vs Investment}
+    \begin{footnotesize}
+        \footnotesize
+        \input{discount_vs_investment.tex}
+    \end{footnotesize}
+    \begin{itemize}
+        \item Estimates close to negative one (as predicted by model) and remarkably stable
+        % \item One endogeneity story: risk premia decreases investment and increases discount rate wedge, leading to more negative coefficient
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Discount Rate vs Investment}
+    \begin{center}
+        \centering
+        \includegraphics[width=0.72\linewidth,height=0.66\textheight,keepaspectratio]{figures/adjusted_marginal_q.png}
+    \end{center}
+Investment behavior consistent with Q theory where firms discount using financial cost of capital plus the cost of capital and discount rate wedges.
+\end{frame}
+
+
+\begin{frame}{Explaining the Discount Rate Wedge}
+    \begin{footnotesize}
+        \footnotesize
+        \input{market_power.tex}
+    \end{footnotesize}
+\begin{itemize}
+    \item Endogeneity concern: higher market power firms are also larger and may have better ability to measure and update estimates of cost of capital
+    \item Low $R^2$ with and without firm fixed effects suggests limited explanatory power of market power on discount rate wedge in the timeseries or cross-section 
+\end{itemize}
+\begin{alertblock}{Puzzle}
+    What drives changes in the discount rate wedge?
+\end{alertblock}
+\begin{itemize}
+    \item Why are discount rates sticky?
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Discussion}
+    \begin{itemize}
+        \item How much does each wedge drive the gap between investment and Q Theory?
+        \begin{itemize}
+            \item For example, regress investment gap on cost of capital and discount rate wedge
+            \item If firms have better information on perceived cost of capital than is provided by market returns, then COC wedge is not measured correctly
+        \end{itemize}
+        \vspace{0.3cm}
+        \item Why don't firms use more sophisticated discount rate methods?
+        \begin{itemize}
+            \item Discount rate ignores term structure and assumes project has same distribution of cash flows as firm
+            \item Firms that report discount rates in multiple periods account for only 15\% of listed firms assets in Compustat
+            \item Firm's discretion around investment opportunities may help explain fixed discount rates
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\appendix
+
+\begin{frame}
+    \centering
+    \vfill
+    {\Huge\bfseries Appendix}
+    \vfill
+\end{frame}
+
+\begin{frame}{Literature Review}
+    \begin{itemize}
+        \item \textbf{How the cost of capital and discount rates shape investment}
+        \begin{itemize}
+            \item \textit{Papers:} \citet{jorgenson-1963}; \citet{tobin-1969}; \citet{hall-2017}
+            \item \textit{Contribution:} Links financial prices, perceived cost of capital, discount rates, and investment in one firm-level dataset.
+        \end{itemize}
+
+        \vspace{0.25cm}
+        \item \textbf{Measuring implied cost of capital}
+        \begin{itemize}
+            \item \textit{Papers:} \citet{fama-french-1997}; \citet{easton-2004}
+            \item \textit{Contribution:} Directly measures firms' perceived cost of capital.
+        \end{itemize}
+
+        \vspace{0.25cm}
+        \item \textbf{How asset prices affect investment}
+        \begin{itemize}
+            \item \textit{Papers:} \citet{bond-edmans-goldstein-2012}; \citet{baker-stein-wurgler-2003}
+            \item \textit{Contribution:} Argues for a discount-rate channel through which equity prices affect long-run investment without equity issuance.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{References}
+    \scriptsize
+    \nocite{gormsen-huber-2025}
+    \bibliographystyle{apalike}
+    \bibliography{references}
+\end{frame}
+
+\end{document}

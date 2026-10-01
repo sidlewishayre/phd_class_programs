@@ -1,0 +1,90 @@
+% Usage: \shortflowchart{0} for no highlight, or {1}, {2}, {3} to
+% highlight the corresponding arrow from left to right.
+\newcommand{\shortflowchart}[1]{%
+\begin{center}
+\begin{tikzpicture}[
+    processbox/.style={
+        draw,
+        rounded corners,
+        align=center,
+        minimum width=2.3cm,
+        minimum height=0.85cm
+    },
+    processarrow/.style={-{Latex[length=2.5mm]}, thick},
+    highlightedarrow/.style={processarrow, draw=red!75!black, very thick},
+    wedgebox/.style={
+        draw,
+        align=center,
+        minimum width=2.05cm,
+        minimum height=0.75cm,
+        font=\scriptsize
+    },
+    highlightedwedge/.style={
+        wedgebox,
+        draw=red!75!black,
+        fill=red!15,
+        text=red!75!black,
+        very thick
+    },
+    wedgearrow/.style={-{Latex[length=2mm]}, thin},
+    highlightedwedgearrow/.style={wedgearrow, draw=red!75!black, very thick}
+]
+
+\node[processbox] (cost) {Financial Cost\\of Capital};
+\node[processbox, right=1.15cm of cost]
+    (perceived) {Perceived Cost\\of Capital};
+\node[processbox, right=1.15cm of perceived]
+    (discount) {Discount\\Rate};
+\node[processbox, right=1.15cm of discount]
+    (investment) {Investment};
+
+\coordinate (mid1) at ($(cost.east)!0.5!(perceived.west)$);
+\coordinate (mid2) at ($(perceived.east)!0.5!(discount.west)$);
+
+\ifnum#1=1
+    \node[highlightedwedge, below=0.9cm of mid1] (costwedge)
+        {Cost of Capital\\Wedge};
+\else
+    \node[wedgebox, below=0.9cm of mid1] (costwedge)
+        {Cost of Capital\\Wedge};
+\fi
+\ifnum#1=2
+    \node[highlightedwedge, below=0.9cm of mid2] (discountwedge)
+        {Discount Rate\\Wedge};
+\else
+    \node[wedgebox, below=0.9cm of mid2] (discountwedge)
+        {Discount Rate\\Wedge};
+\fi
+
+\ifnum#1=1
+    \draw[highlightedwedgearrow] (costwedge.north) -- (mid1);
+\else
+    \draw[wedgearrow] (costwedge.north) -- (mid1);
+\fi
+\ifnum#1=2
+    \draw[highlightedwedgearrow] (discountwedge.north) -- (mid2);
+\else
+    \draw[wedgearrow] (discountwedge.north) -- (mid2);
+\fi
+
+\ifcase#1
+    \draw[processarrow] (cost) -- (perceived);
+    \draw[processarrow] (perceived) -- (discount);
+    \draw[processarrow] (discount) -- (investment);
+\or
+    \draw[highlightedarrow] (cost) -- (perceived);
+    \draw[processarrow] (perceived) -- (discount);
+    \draw[processarrow] (discount) -- (investment);
+\or
+    \draw[processarrow] (cost) -- (perceived);
+    \draw[highlightedarrow] (perceived) -- (discount);
+    \draw[processarrow] (discount) -- (investment);
+\or
+    \draw[processarrow] (cost) -- (perceived);
+    \draw[processarrow] (perceived) -- (discount);
+    \draw[highlightedarrow] (discount) -- (investment);
+\fi
+
+\end{tikzpicture}
+\end{center}%
+}

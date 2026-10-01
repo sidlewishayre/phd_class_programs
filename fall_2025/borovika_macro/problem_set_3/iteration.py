@@ -4,7 +4,8 @@ import numpy as np
 import scipy.optimize
 import matplotlib.pyplot as plt
 
-from value_fn_iteration import value_fn_iteration
+sys.path.append("/home/sidlh/Documents/reusable_code")
+from macro.value_fn_iteration import value_fn_iteration
 
 from inputs import (
     F,
@@ -39,7 +40,7 @@ def plot_consumption(x, g, alpha=alpha, delta=delta):
 def compute_steady_state(alpha=alpha, beta=beta, delta=delta, f_prime=f_prime):
     return float(
         scipy.optimize.root(
-            lambda k: (f_prime(k, alpha=alpha, delta=delta)) * beta - 1, x0=1
+            lambda k: (f_prime(k, pi=None, alpha=alpha, delta=delta)) * beta - 1, x0=1
         ).x[0]
     )
 
@@ -55,51 +56,62 @@ def run_iteration(
     compare=None,
     plot=True,
     utility=utility,
+    P=None,
+    pi=None,
+    N=N,
+    max_iter=10000,
+    tol=1e-10,
 ):
     k_steady = compute_steady_state()
+    V_alt = None
     if compare is not None:
         if len(compare) > 3:
             V_alt = compare[0]
-        else:
-            V_alt = None
         g_alt = compare[-3]
         c_alt = compare[-2]
         x_alt = compare[-1]
 
     iterate_value_fn = lambda x: value_fn_iteration(
-        F=lambda x, y: F(x, y, delta=delta, alpha=alpha, gamma=gamma, utility=utility),
+        F=lambda x, y, pi=None: F(
+            x=x, y=y, pi=pi, delta=delta, alpha=alpha, gamma=gamma, utility=utility
+        ),
         x=x,
-        F_valid=lambda x, y: F_valid(x, y, delta=delta, alpha=alpha),
+        F_valid=lambda x, y, pi=None: F_valid(
+            x=x, y=y, pi=pi, delta=delta, alpha=alpha
+        ),
         beta=beta,
         plot=compare is None and plot,
-        max_iter=10000,
-        tol=1e-10,
+        P=P,
+        pi=pi,
+        max_iter=max_iter,
+        tol=tol,
     )
-    if x is not None:
+    if x is None:
         x = np.linspace(min_ratio * k_steady, max_ratio * k_steady, N)
     V, g = iterate_value_fn(x)
     if not plot:
         return V, g, x
-    if V_alt is not None:
-        plt.plot(x, V)
-        plt.plot(x_alt, V_alt, label="Baseline", c="r")
-        plt.legend()
-        plt.ylabel("Value Function")
-        plt.xlabel("Decision Rule")
-        plt.show()
-    if compare is not None:
-        plt.plot(x, g)
-        plt.plot(x_alt, g_alt, label="Baseline", c="r")
-        plt.legend()
-        plt.ylabel("Next Capital")
-        plt.xlabel("This Capital")
-        plt.xlim(x.min(), x.max())
-        plt.ylim(g.min(), g.max())
-        plt.show()
-    if compare is not None:
-        plt.plot(x_alt, c_alt, label="Baseline", c="r")
-        plt.legend()
-    c = plot_consumption(x, g=g, alpha=alpha, delta=delta)
+    if P is None:
+        if V_alt is not None:
+            plt.plot(x, V)
+            plt.plot(x_alt, V_alt, label="Baseline", c="r")
+            plt.legend()
+            plt.ylabel("Value Function")
+            plt.xlabel("Decision Rule")
+            plt.show()
+        if compare is not None:
+            plt.plot(x, g)
+            plt.plot(x_alt, g_alt, label="Baseline", c="r")
+            plt.legend()
+            plt.ylabel("Next Capital")
+            plt.xlabel("This Capital")
+            plt.xlim(x.min(), x.max())
+            plt.ylim(g.min(), g.max())
+            plt.show()
+        if compare is not None:
+            plt.plot(x_alt, c_alt, label="Baseline", c="r")
+            plt.legend()
+        c = plot_consumption(x, g=g, alpha=alpha, delta=delta)
     return V, g, c, x
 
 
