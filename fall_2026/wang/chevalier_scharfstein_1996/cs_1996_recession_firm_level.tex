@@ -1,0 +1,45 @@
+\begin{minipage}{\textwidth}
+    \centering
+    \scriptsize
+    \renewcommand{\arraystretch}{0.92}
+    \begin{tabular}{@{}lcc@{}}
+        \toprule
+        & \multicolumn{2}{c}{\textbf{Coefficient}} \\
+        \cmidrule(lr){2-3}
+        
+            & \textbf{1991:Q1--1991:Q4}
+            & \textbf{1991:Q1--1992:Q4} \\
+        \midrule
+        LBO
+            & $0.030^{***}$ & $0.025^{***}$ \\
+            & $(3.235)$ & $(2.670)$ \\
+        \textcolor{red}{LBO $\times$ $\Delta$Employment}
+            & \textcolor{red}{$-1.131^{***}$} & \textcolor{red}{$-0.402^{*}$} \\
+            & \textcolor{red}{$(-2.942)$} & \textcolor{red}{$(-1.659)$} \\
+        Competitor LBO Share
+            & $0.109^{***}$ & $0.120^{***}$ \\
+            & $(3.454)$ & $(3.456)$ \\
+        \textcolor{red}{Competitor LBO Share $\times$ $\Delta$Employment}
+            & \textcolor{red}{$-2.834^{**}$} & \textcolor{red}{$-1.152$} \\
+            & \textcolor{red}{$(-2.184)$} & \textcolor{red}{$(-1.389)$} \\
+        $\Delta$Employment
+            & $0.712^{***}$ & $0.375^{*}$ \\
+            & $(2.578)$ & $(1.807)$ \\
+        $\Delta$Wage
+            & $-0.004$ & $-0.011$ \\
+            & $(-0.333)$ & $(-0.892)$ \\
+        Constant
+            & $-0.003$ & $0.050^{***}$ \\
+            & $(-0.413)$ & $(5.044)$ \\
+        \midrule
+        $R^2$ & $0.179$ & $0.200$ \\
+        Observations & $110$ & $89$ \\
+        \bottomrule
+    \end{tabular}
+
+    \vspace{0.1cm}
+    \centering
+    \footnotesize
+    \textit{Notes:} The dependent variable is the change in a firm's price index
+    from 1991:Q1 to 1991:Q4 and from 1991:Q1 to 1992:Q4.
+\end{minipage}

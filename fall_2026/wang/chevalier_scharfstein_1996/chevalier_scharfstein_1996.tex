@@ -1,0 +1,299 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usetheme{Madrid}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,positioning}
+\usepackage{booktabs}
+\usepackage[round,authoryear]{natbib}
+
+\setbeamertemplate{navigation symbols}{}
+\newenvironment{bluealertblock}[1]{%
+    \begingroup
+    \setbeamercolor{block title alerted}{use=structure,fg=white,bg=structure.fg}%
+    \setbeamercolor{block body alerted}{use=structure,fg=black,bg=structure.fg!10!white}%
+    \begin{alertblock}{#1}
+}{%
+    \end{alertblock}
+    \endgroup
+}
+
+\title{Chevalier and Scharfstein (1996)}
+\author{Siddhartha Lewis-Hayre}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{Motivation}
+    \begin{itemize}
+        \item Countercyclicality of markups are central in New Keynesian DSGE models
+        \begin{itemize}
+            \item Adding aggregate demand shocks to RBC model makes wages countercyclical, contrary to empirical evidence
+            \item Countercyclical markups could nullify this effect
+        \end{itemize}
+    \end{itemize}
+
+    \vspace{0.1cm}
+
+    \begin{columns}[c,onlytextwidth]
+        \begin{column}{0.49\textwidth}
+            \centering
+            \textbf{Positive shock to aggregate demand}
+
+            \resizebox{0.88\linewidth}{!}{\input{aggregate_demand_shift}}
+        \end{column}
+        \begin{column}{0.49\textwidth}
+            \centering
+            \textbf{Negative shock to markup}
+
+            \resizebox{0.88\linewidth}{!}{\input{counter_cyclical_markups}}
+        \end{column}
+    \end{columns}
+
+    \begin{alertblock}{Question}
+        Why might markups be countercyclical?
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Contribution}
+    \begin{itemize}
+        \item Three reasons why markups might be countercyclical
+        \begin{enumerate}
+            \item elasticity of demand changes with output
+            \item collusion is more difficult during booms 
+            \begin{itemize}
+                \item Rotemberg and Woodford (1991, 1992)
+            \end{itemize}
+            \item \textbf{capital market imperfections}
+        \end{enumerate}
+    \end{itemize}
+
+    \vspace{0.15cm}
+
+    \begin{bluealertblock}{Contribution}
+        Explains countercyclicality of markups with financial frictions
+    \end{bluealertblock}
+
+    \vspace{0.3cm}
+
+    Provides empirical evidence from supermarket industry
+\end{frame}
+
+\begin{frame}{Literature}
+    Relation to the macro-literature:
+    \vspace{0.3cm}
+    \begin{itemize}
+        \item Capital market imperfections reverses Rotemberg and Woodford (1991, 1992) result that collusion is more difficult during booms
+        \item Sticky wages and Calvo pricing were later introduced to yield countercyclical markups
+        \begin{itemize}
+            \item See for example: Yun (1996) and Rotemberg and Woodford (1997)
+        \end{itemize}
+        \item Like Bernanke, Gertler and Gilchrist (1998), uses financial friction to get amplification
+        \item Gilcrhist, Schoenle, Sim and Zakrajsek (2017) argues financial frictions can strengthen countercyclical markups
+    \end{itemize}
+    
+\end{frame}
+
+\begin{frame}{Results}
+\textbf{Theoretical:}
+\begin{itemize}
+    \item Findings:
+    \begin{itemize}
+        \item firm's markup more counter-cyclical if financially constrained
+        \item firm's markup more counter-cyclical if rival is financially constrained
+        \item industry-wide markups more counteryclical if more firms are financially constrained
+    \end{itemize}
+    \item Mechanism:
+    \begin{itemize}
+        \item if a firm needs external financing, then a bust will cause the firm to be siezed
+        \item so future profits will not matter as much and firm will increase price today
+    \end{itemize} 
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Empirical:}
+\begin{itemize}
+    \item after oil shock, prices fall less where local and regional chains have larger prescense
+    \item chains that undertook LBOs cut prices less during 1990-1991 macroeconomic recession
+    \item in poorly performing cities following 1990-1991 macro-recession
+    \begin{itemize}
+        \item leveraged firms cut prices by less
+        \item firms cut prices less if their rivals were highly leveraged
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Model}
+    \begin{columns}[T,onlytextwidth]
+        \begin{column}{0.49\textwidth}
+            \begin{itemize}
+                \item Two-period model
+                \item In first period, firms compete for customers by setting prices
+                \begin{itemize}
+                    \item Discrete choice where agents get value from being ``closer" to a firm
+                \end{itemize}
+                \item In second period, firms keep customers from first period
+                \begin{itemize}
+                    \item motiviated by switching costs
+                \end{itemize}
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.49\textwidth}
+            \raggedleft
+            \resizebox{!}{0.43\textheight}{\input{cs_1996_market_share}}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.35cm}
+    \centering
+    \resizebox{0.88\linewidth}{!}{\input{cs_1996_timeline}}
+\end{frame}
+
+\begin{frame}{Financial Friction}
+    What if firm needs external financing?
+    \begin{itemize}
+        \item Cash flow from firm is observable but not ``verifiable''
+        \item Moral hazard problem where manager can divert cash flow to herself
+        \item Investor can force liquidation value and recover $\lambda$ of cash flows
+    \end{itemize}
+    
+    \vspace{0.1cm}
+
+    Hart and Moore (1989), Bolton and Scharfstein (1990, 1996) show optimal contract is debt where investor siezes firm if it does not pay
+
+    \vspace{0.1cm}
+
+    Assumptions:
+    \begin{itemize}
+        \item The contract is incentive compatible
+        \begin{itemize}
+            \item $D \leq \pi^k_2(\sigma_1^k)$
+        \end{itemize}
+        \item The manager repays in a boom and defaults in a bust
+        \begin{itemize}
+            \item $\pi^k_1(\theta_H) > D > \pi^k_1(\theta_L)$
+        \end{itemize}
+    \end{itemize}
+    \vspace{0.1cm}
+
+    \begin{bluealertblock}{Takeaway}
+        Firm does not get second period payoff if bad state arrives
+    \end{bluealertblock}
+\end{frame}
+
+\begin{frame}{Financial Constraint}
+    \begin{columns}[T,onlytextwidth]
+        \begin{column}{0.49\textwidth}
+            \centering
+            \textbf{Unconstrained firm}
+
+            \vspace{0.25cm}
+            \resizebox{\linewidth}{!}{\input{cs_1996_model_diagram}}
+        \end{column}
+        \begin{column}{0.49\textwidth}
+            \centering
+            \textbf{Financially constrained firm}
+
+            \vspace{0.25cm}
+            \resizebox{0.90\linewidth}{!}{\input{cs_1996_model_diagram_constrained}}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.25cm}
+    \centering
+    \scriptsize
+    \renewcommand{\arraystretch}{1.45}
+    \resizebox{\textwidth}{!}{%W
+    \begin{tabular}{c|c|c|c}
+        & \textbf{Unconstrained} & \textbf{Financially constrained}
+        & \textbf{Difference} \\
+        \hline
+        \textbf{Profit}
+        & $\begin{aligned}
+              &-I+\mu\!\left[\pi_1^k(p,\theta_H)+\pi_2^k(\sigma_1^k)\right]\\
+              &\quad +(1-\mu)\!\left[\pi_1^k(p,\theta_L)
+              +\textcolor{red}{\pi_2^k(\sigma_1^k)}\right]
+          \end{aligned}$
+        & $\begin{aligned}
+              &\mu\!\left[\pi_1^k(p,\theta_H)-D+\pi_2^k(\sigma_1^k)\right] \\
+              &\quad +(1-\mu)\pi_1^k(p,\theta_L)
+          \end{aligned}$
+        & $I-\mu D-(1-\mu)\pi_2^k(\sigma_1^k)$ \\
+        \hline
+        \textbf{Loan payoff} & --- & $D+(1-\mu)\lambda\pi_2^k(\sigma_1^k)-I \geq 0$ & --- \\
+    \end{tabular}%
+    }
+\end{frame}
+
+\begin{frame}{Theoretical Results}
+    
+    \begin{center}
+        \centering
+        \resizebox{!}{0.58\textheight}{\input{cs_1996_price_equilibria}}
+    \end{center}
+    
+    \vspace{0.1cm}
+
+    Denote $e_k$ as an indicator of whether the firm is financailly constrained then:
+    \small
+    \[\frac{d m^{*A}(e_A,e_B)}{d\mu}=\frac{d p^{*A}(e_A,e_B)}{d\mu}=\left[\left(1-\frac{2e_A+e_B}{3}\right)\theta_H-\theta_L\right]\frac{R-c_2}{\bar{\theta}}.\]
+    Markups not neccesarily countercyclical, but finacial constraints increases countercylicality of markups
+\end{frame}
+
+\begin{frame}{Oil Shock}
+    \label{tab:oil-shock}
+    \begin{center}
+        \input{cs_1996_oil_shock}
+    \end{center}
+    \vspace{0.3cm}
+    \textbf{Conclusion:} Markups rose more for local chains in oil states.
+\end{frame}
+
+\begin{frame}[shrink=8]{1990-1991 Macro-Recession}
+    \label{tab:macro-recession}
+    \begin{center}
+        \input{cs_1996_lbo}
+    \end{center}
+    \vspace{0.3cm}
+    \textbf{Conclusion:} Regions with more LBOs firms raise prices by more in places hard hit by the recession.
+\end{frame}
+
+\begin{frame}[shrink=12]{Post Macro-Recession: Firm Level Evidence}
+    \label{tab:post-macro-firm-level}
+    \begin{center}
+        \input{cs_1996_recession_firm_level}
+    \end{center}
+    \vspace{0.1cm}
+    \textbf{Conclusion:} LBO firms and firms with LBO rivals raised prices by more in regions hard hit by the recession.
+\end{frame}
+
+
+\begin{frame}{Comments}
+    
+\end{frame}
+\appendix
+
+
+\begin{frame}
+    \centering
+    \vfill
+    {\Huge\bfseries Appendix}
+    \vfill
+\end{frame}
+
+\begin{frame}{References}
+    \scriptsize
+    % Add a BibTeX file when citations are introduced:
+    % \bibliographystyle{apalike}
+    % \bibliography{references}
+\end{frame}
+
+\end{document}

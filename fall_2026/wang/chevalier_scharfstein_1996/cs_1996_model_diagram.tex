@@ -1,0 +1,47 @@
+\begin{tikzpicture}[
+    >=stealth,
+    every node/.style={font=\large},
+    dot/.style={circle, fill=black, inner sep=2.5pt}
+]
+
+% Time labels
+\node at (1,5.2) {$\underline{t=0}$};
+\node at (4,5.2) {$\underline{t=1}$};
+\node at (8,5.2) {$\underline{t=2}$};
+
+% Nodes
+\node[dot] (start) at (1,2.5) {};
+\node[dot] (up1)   at (4,3.8) {};
+\node[dot] (down1) at (4,1.2) {};
+\node[dot] (up2)   at (8,3.8) {};
+\node[dot, fill=red] (down2) at (8,1.2) {};
+
+% Initial investment
+\node[left=0.25cm of start] {$-I$};
+
+% Branches from initial choice
+\draw (start) -- (up1)
+    node[midway, above left] {$\mu$};
+
+\draw (start) -- (down1)
+    node[midway, below left] {$1-\mu$};
+
+% Period 1 payoffs
+\node[above=0.25cm of up1]
+    {$\pi_1^k(p,\theta_H)$};
+
+\node[below=0.25cm of down1]
+    {$\pi_1^k(p,\theta_L)$};
+
+% Period 1 -> Period 2
+\draw (up1) -- (up2);
+\draw[red] (down1) -- (down2);
+
+% Period 2 payoffs
+\node[right=0.3cm of up2]
+    {$\pi_2^k(\sigma_1^k)$};
+
+\node[right=0.3cm of down2, text=red]
+    {$\pi_2^k(\sigma_1^k)$};
+
+\end{tikzpicture}
