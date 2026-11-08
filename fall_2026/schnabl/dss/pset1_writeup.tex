@@ -1,0 +1,33 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\pagestyle{empty}
+\begin{document}
+\section{Exercise I: The Deposits Channel}
+
+\subsection{Data Pulling}
+\begin{center}
+ \includegraphics[width=\textwidth]{results/quarterly_changes.pdf}
+\end{center}
+
+\subsection{Computing betas}
+
+\begin{center}
+\input{results/beta_comparison.tex}
+\end{center}
+
+\clearpage
+\subsection{Regression results}
+\begin{center}
+ \textbf{Panel A: All banks}\par\smallskip
+ \resizebox{\textwidth}{!}{\input{results/beta_regs/tables/table_ix_panel_a.tex}}
+ \par\medskip
+ \textbf{Panel B: Largest 5\% of banks}\par\smallskip
+ \resizebox{\textwidth}{!}{\input{results/beta_regs/tables/table_ix_panel_b.tex}}
+ \par\medskip
+ \clearpage
+ \includegraphics[width=\textwidth]{results/beta_regs/figure_vi.pdf}
+\end{center}
+\end{document}
