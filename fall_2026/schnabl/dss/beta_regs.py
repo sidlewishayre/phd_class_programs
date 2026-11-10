@@ -14,7 +14,9 @@ import sys
 
 CWD = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(CWD)
-sys.path.append(os.path.abspath(os.path.join(CWD, "../../../../reusable_code")))
+from settings import REUSABLE_CODE_DIR
+
+sys.path.append(str(REUSABLE_CODE_DIR))
 
 import tempfile
 from pathlib import Path
@@ -30,7 +32,7 @@ from reg_runner import run_tables
 
 from compute_betas import compute_betas
 
-ROOT = Path(__file__).resolve().parent
+import settings
 FLOW_LABELS = {
     "deposit_flow_beta": r"Deposit-$\beta$",
     "asset_flow_beta": r"Assets-$\beta$",
@@ -153,26 +155,23 @@ def make_binscatters(betas: pd.DataFrame, output: Path, name: str = "figure_vi")
 
 def write_beta_comparison(betas: pd.DataFrame):
     """Update the writeup's comparison table from the current bank estimates."""
-    summary = betas.attrs["summary"]
-    first_year = pd.Period(summary["first_quarter"], freq="Q").year
-    last_year = pd.Period(summary["last_quarter"], freq="Q").year
+    summary = {
+        "DSS (2017)": betas.attrs["summary"]["paper_mean_spread_beta"],
+        "Replication": betas.spread_beta.mean(),
+    }
     table = "\n".join(
         [
             r"\begin{tabular}{lc}",
             r"\toprule",
             r" & Mean deposit spread $\beta$ \\",
             r"\midrule",
-            f"Paper (1994--2013) & {summary['paper_mean_spread_beta']:.3f}" + r" \\",
-            f"Our sample ({first_year}--{last_year}) & {betas.spread_beta_raw.mean():.3f}"
-            + r" \\",
-            f"Our sample, {100 * summary.get('beta_winsor_tail', .05):g}\\% winsorized & {betas.spread_beta.mean():.3f}"
-            + r" \\",
+            *[f"{label} & {value:.3f}" + r" \\" for label, value in summary.items()],
             r"\bottomrule",
             r"\end{tabular}",
             "",
         ]
     )
-    path = ROOT / "results" / "beta_comparison.tex"
+    path = settings.BETA_COMPARISON_FILE
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(table)
     return path
@@ -181,7 +180,7 @@ def write_beta_comparison(betas: pd.DataFrame):
 
 def main(panel: pd.DataFrame | None = None, *, beta_tail=0.05):
     name = "beta_regs" if beta_tail == 0.05 else f"beta_regs_{100*beta_tail:g}pct"
-    output = ROOT / "results" / name
+    output = settings.RESULTS_DIR / name
     output.mkdir(parents=True, exist_ok=True)
     betas = compute_betas(
         panel=panel, include_loan_categories=True, beta_tail=beta_tail

@@ -3,31 +3,108 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{enumitem}
+\usepackage{float}
 \pagestyle{empty}
 \begin{document}
 \section{Exercise I: The Deposits Channel}
 
-\subsection{Data Pulling}
-\begin{center}
- \includegraphics[width=\textwidth]{results/quarterly_changes.pdf}
-\end{center}
+\subsection{Robustness}
 
-\subsection{Computing betas}
+Robustness tests fall into two main categories: methodological and economic. The methodological robustness tests show that winsorizing and adding FFR lags is important for the magnitude. Although the result dissapears without winsorizing, I think it is a reasonable methodology because some betas have very large aboslute values due to the instability of linear regressions in small samples. Windsorizing is simply reducing the large amounts of noise. Adding lags to the FFR only increases the power of the relationship, as would be expected since changes in the FFR are persistent[?].
 
-\begin{center}
-\input{results/beta_comparison.tex}
-\end{center}
+Taking the methodology as correct, the results are extremely economically robust. They are quite constant over time and across bank characteristics like leverage, uninsured deopsit share, deposit funding share, and assets. This economic robustness also supports the methodological choices.
 
-\clearpage
-\subsection{Regression results}
-\begin{center}
- \textbf{Panel A: All banks}\par\smallskip
- \resizebox{\textwidth}{!}{\input{results/beta_regs/tables/table_ix_panel_a.tex}}
- \par\medskip
- \textbf{Panel B: Largest 5\% of banks}\par\smallskip
- \resizebox{\textwidth}{!}{\input{results/beta_regs/tables/table_ix_panel_b.tex}}
- \par\medskip
- \clearpage
- \includegraphics[width=\textwidth]{results/beta_regs/figure_vi.pdf}
-\end{center}
+Finally, I wanted study whether spread beta predicts deposit beta more strongly for banks that face more comeptition from money market funds. I capture competition from money market funds with ``MMF beta" or the beta between change in deposits and change in MFF assets. Likely there is a problem with the measurement of MMF beta is not good enough, but the results go the opposite direction as would be expected.
+
+\subsection{Refereeing with AI}
+
+With cheaper robustness tests, it is possible the author ran many robustness tests and cherry-picked the robustess tests that preserved the result. It becomes more imperative that someone other than the author suggests the robustness tests to avoid this p-hacking. If the referee proposes enough robustness tests and a high enough fraction of them pass, it would help convince a skeptical referee that the robustness results were not cherry-picked. Still, the author could cheat in implementing the robustness tests; however, this would be more blatantly dishonest.
+
+The main problem with the referee proposing the robustness tests is that it requires a lot of effort by the referee. Ideally there could be some standardized rules around robustness tests, perhaps broken up by literature. For example, the banking literature could always require looking at community banks, regional banks, and CCAR banks separately. 
+
+Unfortunately this would be difficult to operationalize as each paper is different and the whole point of robustness tests is to use creativity. Therefore, I think the best way to convince the referee is to have thoughtful comments about why you chose each robustness test. A compelling explanation signals that you thought about the test, which raises the cost of running them, therby resoloving the initial problem. As with anything disrupted by AI, the human skill that AI struggles the most to replicate will become the most valued.
+
+\section{Exercise II: Audit the AI}
+
+\subsection{AI Decision Making}
+
+The AI code differed from the original replication in the following ways:
+
+\begin{enumerate}[label=\textbf{(\alph*)}, leftmargin=*, itemsep=2\baselineskip]
+    \item \textbf{Cumulation of interest expenses:}
+
+    Both the AI and the original replication cumulate the expensies correctly and drop observations where an earlier observation in the year is missing.
+
+    \item \textbf{Fed funds rate switch to target range:}
+
+    Both replications use range midpoint after December 2008. However, instead of switching explicitly, the AI just fills in NA values with the midpoint.
+
+    \item \textbf{Timing of interest rate relative to call report date}
+
+    To compute the deposit spread, both methodologies average over the quarter. To compute the changes they take the difference between quarter-ends.
+
+    \item \textbf{Bank mergers}
+
+    Niether code deals with bank-mergers adequately. The AI winsorizes quarterly growth limiting extreme jumps.
+
+    \item \textbf{Winsorization before or after bank level collapsing}
+
+    The AI winsorizes before aggregating at the 1\% level, whereas the original replication winsorizes at the 5\% level after computing betas.
+
+    \item \textbf{Deposit series}
+
+    The AI uses total deposits whereas the original replication used domesetic deposits.
+
+\end{enumerate}
+
+
+\subsection{Importance of AI Decisions}
+
+Ultimately the coefficients between the two replications are so close that the differences between the two methodologies do not lead to a noticeable qualitative difference.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Deposit-$\beta$ on spread-$\beta$: methodology comparison}
+    \label{tab:ai_methodology_comparison}
+    \resizebox{\textwidth}{!}{%
+        \input{results/ai_audit_comparisons/tables/comparisons.tex}%
+    }
+    \par\smallskip
+    \begin{minipage}{\textwidth}
+        \footnotesize
+        Notes: Column (1) is the original replication. Column (2) Winsorizes quarterly deposit rates and deposit growth at 1\% before estimating betas and winsorizes final betas at 1\%. Column (3) additionally uses total deposits instead of domestic deposits. Column (4) is the AI replication
+    \end{minipage}
+\end{table}
+
+\section{Excercise III: Out of Sample}
+
+\subsection{Mean Beta Comparison}
+\begin{table}[H]
+    \centering
+    \caption{Mean spreads}
+    \label{tab:mean_betas}
+    \input{results/out_of_sample/tables/mean_betas.tex}
+\end{table}
+
+\subsection{Beta Persistence}
+\begin{table}[H]
+    \centering
+    \caption{Beta persistence}
+    \label{tab:persistence}
+    \input{results/out_of_sample/tables/persistence.tex}
+\end{table}
+
+\subsection{Out of Sample Results}
+\begin{table}[H]
+    \centering
+    \caption{Out of sample results: All banks}
+    \label{tab:table_ix_panel_a}
+    \resizebox{\textwidth}{!}{%
+        \input{results/out_of_sample/tables/table_ix_panel_a.tex}%
+    }
+\end{table}
+
+\subsection{External Validity}
+
 \end{document}

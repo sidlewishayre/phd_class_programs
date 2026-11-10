@@ -5,9 +5,9 @@ import sys
 
 CWD = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(CWD)
-sys.path.append(os.path.abspath(os.path.join(CWD, "../../../../reusable_code")))
+from settings import REUSABLE_CODE_DIR
 
-from pathlib import Path
+sys.path.append(str(REUSABLE_CODE_DIR))
 
 import matplotlib
 
@@ -18,11 +18,11 @@ import pandas as pd
 
 from get_data import get_data
 
-ROOT = Path(__file__).resolve().parent
+import settings
 
 
 def main(panel: pd.DataFrame | None = None):
-    out = ROOT / "results"
+    out = settings.RESULTS_DIR
     out.mkdir(exist_ok=True)
     variables = [
         ("d_deposit_spread_pct", "Deposit spread", "Percentage points"),
@@ -78,7 +78,8 @@ def main(panel: pd.DataFrame | None = None):
         plt.close(individual)
     fig.suptitle(
         f"Quarterly changes: commercial banks, {pd.Period(panel.quarter.min(), freq='Q').year}–"
-        f"{pd.Period(panel.quarter.max(), freq='Q').year} sample", y=0.995
+        f"{pd.Period(panel.quarter.max(), freq='Q').year} sample",
+        y=0.995,
     )
     fig.tight_layout()
     fig.savefig(out / "quarterly_changes.pdf")
