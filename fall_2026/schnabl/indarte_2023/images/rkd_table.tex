@@ -1,0 +1,30 @@
+% Include with \input{images/rkd_table.tex}.
+\begin{minipage}{\textwidth}
+\centering
+\textbf{The Effect of Bankruptcy Costs on Filing (RKD Estimates)}
+\par\medskip
+{\small
+\setlength{\tabcolsep}{7pt}
+\begin{tabular}{lcccc}
+\hline
+\hline
+ & (1) & (2) & (3) & (4) \\ \\
+\hline
+RK Estimate (percent of average) & $-1.64^{***}$ & $-2.63^{***}$ & $-2.31^{***}$ & $-2.36^{***}$ \\
+Standard Error & (0.21) & (0.34) & (0.43) & (0.45) \\[0.2cm]
+\hline
+Bandwidth & 67.06 & 67.06 & 49.42 & 89.30 \\
+Measurement error correction & & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+RKD polynomial order & 2 & 2 & 2 & 3 \\
+Home equity control order & 1 & 1 & 3 & 3 \\
+\hline
+LHS effective observations & 21,383,503 & 21,383,503 & 17,536,206 & 25,884,133 \\
+RHS effective observations & 24,637,614 & 24,637,614 & 20,013,724 & 29,029,069 \\
+\hline
+Total observations & \multicolumn{4}{c}{99,233,172} \\
+\hline
+\hline
+\end{tabular}
+}
+\par\medskip
+\end{minipage}

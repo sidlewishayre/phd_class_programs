@@ -1,0 +1,374 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage[round,authoryear]{natbib}
+\usepackage{tikz}
+\usepackage{standalone}
+\usepackage{adjustbox}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{itemize item}[circle]
+\setbeamertemplate{itemize subitem}[circle]
+\setbeamertemplate{itemize subsubitem}[circle]
+
+% Display alert blocks inline, using the title color and surrounding text size.
+\renewenvironment{alertblock}[1]{%
+    \par\medskip\noindent
+    {\usebeamercolor[fg]{frametitle}#1}\enspace
+    \ignorespaces
+}{%
+    \par\medskip
+}
+
+\title{Moral Hazard versus Liquidity in Household
+Bankruptcy}
+\subtitle{Indarte (2023)}
+\author{Siddhartha Lewis-Hayre}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{Motivation}
+
+Why do people default?
+
+\vspace{0.3cm}
+
+\begin{itemize}
+    \item Popular understanding: because you cannot pay
+    \item But default subtle in general equilibrium
+    \begin{itemize}
+        \item assuming complete markets and cost of default, default is inefficient
+    \end{itemize}
+\end{itemize}
+
+\vspace{0.3cm}
+
+\centering
+\begin{tabular}{l p{0.30\textwidth} p{0.30\textwidth}}
+    \hline
+    & \textbf{Moral Hazard} & \textbf{Liquidity} \\
+    \hline
+    Effect & Transfer & Consumption smoothing \\
+    Literature & Geanakoplos (2010) & Chatterjee et al. (2007) \\
+    Amplification & Leverage cycle & Procyclical credit \\
+    Policy & Debt forgiveness & Liquidity injection\\
+    \hline
+\end{tabular}
+\end{frame}
+
+\begin{frame}{Motivation}
+    \begin{alertblock}{Question:}
+        Why do households declare bankruptcy?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Goal:}
+        Identify causal impact of the moral hazard and liquidity effects on filing
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    Causal estimate would quantify the trade-off between moral hazard and consumption smoothing
+
+\end{frame}
+
+\begin{frame}{Challenges}
+    How to identify causal impact of the moral hazard and liquidity effects on filing?
+    \vspace{0.3cm}
+
+    \textbf{Moral Hazard:}
+    \begin{itemize}
+        \item cross sectional variation has ommited variables that lower wealth and increase filing
+        \begin{itemize}
+            \item[$\rightarrow$] overestimates effect
+        \end{itemize}
+        \item policy variation combines direct effect and GE effect of lending contraction
+        \begin{itemize}
+            \item[$\rightarrow$] underestimates effect
+        \end{itemize}
+    \end{itemize}
+    \vspace{0.3cm}
+    \textbf{Liquidity}
+    \begin{itemize}
+        \item find liquidity shock that is not seizable in bankruptcy
+        \item otherwise liquidity shock will decrease moral hazard
+        \begin{itemize}
+            \item[$\rightarrow$] if liquidity shock is seizable, overestimates liquidity effect
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Methodology}
+
+\textbf{Moral Hazard:}
+\begin{itemize}
+    \item exploits homestead exemption laws
+    \item regression kink design (RKD) around equity distance from exemption
+    \item \textit{Identification assumption:} other factors affecting filing are smooth at kink
+\end{itemize}
+\vspace{0.3cm}
+\textbf{Liquidity}
+\begin{itemize}
+    \item liquidity shock from reset rates of ARM
+    \item instruments reset payment with ARM indexation to Libor versus Treasuries
+    \item \textit{Identification assumption:} ARM indexation rate only affects filing through mortgage payment
+\end{itemize}
+    
+\end{frame}
+
+\begin{frame}{Summary of Results}
+
+\textbf{Moral Hazard:}
+\begin{itemize}
+    \item \$1K decrease in generosity of bankruptcy reduces filing rate by \textbf{0.02pp}
+\end{itemize}
+\textbf{Liquidity:}
+\begin{itemize}
+        \item \$1K decrease in annual mortgage payment reduces filing rate by \textbf{0.09pp}
+    \end{itemize}
+
+\vspace{0.3cm}
+
+\begin{itemize}
+    \item[{\usebeamercolor[fg]{itemize item}$\Rightarrow$}] \textbf{Liquidity effect five} times larger than moral hazard effect
+\end{itemize}
+
+\vspace{0.3cm}
+
+If you decrease dischargeable debt, \textbf{83\%} of filing response is due to \textbf{liquidity}
+
+% \begingroup
+% \setbeamercolor{frametitle}{fg=red}
+% \begin{alertblock}{Critique:}
+%     From a policy perspective, if you do not know who is going to file, it would be much cheaper to increase bankruptcy generosity than to give handouts to everyone
+% \end{alertblock}
+% \endgroup
+
+\end{frame}
+
+\begin{frame}[plain]
+    \centering
+    {\usebeamercolor[fg]{frametitle}\Huge\bfseries Moral Hazard Effect}
+\end{frame}
+
+\begin{frame}{Homestead Exemption}
+    \centering
+    \begin{adjustbox}{width=0.8\textwidth,max totalheight=0.8\textheight,center}
+        \input{images/homestead_exemption.tex}
+    \end{adjustbox}
+\end{frame}
+
+\begin{frame}{Stilized Bankruptcy Balance Sheet}
+    \vspace{0.2cm}
+    \centering
+    \begin{adjustbox}{width=\textwidth,max totalheight=\textheight,center}
+        \input{images/bankruptcy_balance_sheet.tex}
+    \end{adjustbox}
+    \par\smallskip
+    {\tiny\raggedright Note: Rough approximation of average filer's stilized balance sheet using U.S. Courts, 2025 BAPCPA  data.\par}
+\end{frame}
+
+\begin{frame}{Results: Moral Hazard Effect}
+    \begin{center}    
+        \centering
+        \includegraphics[width=0.9\textwidth,height=0.78\textheight,keepaspectratio]{images/figure_2_seizable_equity.png}
+        \par\smallskip
+    \end{center}
+    {\tiny Source: Indarte (2023), Figure 2.}
+\end{frame}
+
+\begin{frame}{RKD Robustness}
+
+    \begin{alertblock}{Identification Assumption:}
+        The density of unobserved factors that affect bankruptcy decision is smooth at kink
+    \end{alertblock}
+    
+    \vspace{0.3cm}
+
+    \textbf{Robustness Tests:}
+
+    \begin{itemize}
+        \item Underwriting variables available at origination smoothly affects bankruptcy around kink
+        \item Manipulation of home equity before bankruptcy?
+        \begin{itemize}
+            \item Equity distance distribution smooth at kink
+        \end{itemize} 
+        \item Likelihood of bankruptcy costs higher if non-exempt equity? 
+        \begin{itemize}
+            \item Equity distance has smooth effect on future house sales
+        \end{itemize}
+        \item Kinked credit supply?
+        \begin{itemize}
+            \item Uses household-level debt data and finds no kink
+        \end{itemize}
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}{RKD Measurement Error}
+\small
+
+\begin{alertblock}{Challenge:}
+   House prices not observed creating measurement error
+\end{alertblock}
+
+Takes parametric approach to correct measurement error:
+\begin{itemize}
+    \item assumes outcome is quadratic in running and policy variables
+    \item assumes classical measurement error in running variable
+\end{itemize}
+
+This gives the following measurement error adjustment:
+\[
+    \lambda =
+    \left[
+        \underbrace{\left(1-\frac{\widehat{\sigma}_{\mu}^{2}}{\widehat{\sigma}_{x}^{2}}\right)}_{\text{attenuation bias}}
+        \underbrace{\left(1-\widehat{\pi}^{+}-\widehat{\pi}^{-}\right)}_{\text{assignment bias}}
+    \right]^{-1}
+    \approx 1.61.
+\]
+{\footnotesize
+\begin{itemize}
+    \item $\sigma_{\mu}^{2}/\sigma_x^{2}=0.22$: classical attenuation bias
+    \item $\pi^{+}=0.109$ ($\pi^{-}=0.095$): probability observed value is on wrong side of kink
+\end{itemize}
+}
+
+Perhaps with AI you could find home values from bankruptcy proceedings
+
+\end{frame}
+
+\begin{frame}{Results: Moral Hazard Effect}
+    \centering
+    \input{images/rkd_table.tex}
+\end{frame}
+
+
+\begin{frame}[plain]
+    \centering
+    {\usebeamercolor[fg]{frametitle}\Huge\bfseries Liquidity Effect}
+\end{frame}
+
+\begin{frame}{Differential Index Rates}
+    \centering
+    \includegraphics[width=0.9\textwidth,height=0.78\textheight,keepaspectratio]{images/figure_3_libor_treasury.png}
+    \par\smallskip
+    {\tiny Source: Indarte (2023), Figure 3. Monthly one-year Libor and Treasury rates.}
+\end{frame}
+
+\begin{frame}{Results: Liquidity Effect}
+    \centering
+    \input{images/liquidity_iv_table.tex}
+\end{frame}
+
+\begin{frame}{Comment: Uncertain Home Values}
+    \input{images/attenuation_numbers.tex}
+    Homeowner's uncertainty about home value attenuates moral hazard effect
+    \begin{itemize}
+        \item With uncertainty, moral hazard effect \textbf{\UncertaintyMultiplier{}} times larger.
+        \item Also with risk aversion, moral hazard effect \textbf{\RiskAversionMultiplier{}} times larger
+    \end{itemize}
+    \textcolor{blue}{$\rightarrow$} After adjustment, moral hazard effect is as large as liquidity effect
+
+    \begin{center}
+        \includegraphics[width=0.95\textwidth,height=0.52\textheight,keepaspectratio]{images/attenuation.png}
+        \par\smallskip
+    \end{center}
+    {\tiny Asumptions: standard devation in home price uncertainty of \$\MeasurementErrorSD{} (conservative estimate if household is as uncertain as econometrician); bankruptcy wealth of \$\BaselineWealth{}; CRRA risk-aversion coefficient of \RiskAversionCoefficient{}.}
+\end{frame}
+
+\begin{frame}{Comment: Debt Forgiveness on Stressed Borrowers}
+    \begin{alertblock}{Punchline:}
+        If you decrease dischargeable debt, \textbf{83\%} of filing response is due to \textbf{liquidity}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    To convert empirical results into terms of dischargeable debt paper assumes:
+    \begin{alertblock}{Assumption 1:}
+        One dollar reduction in bankruptcy generosity is equivalent to one dollar decrease in dischargeable debt
+    \end{alertblock}
+    
+    \begingroup
+    \setbeamercolor{frametitle}{fg=red}
+    \begin{alertblock}{Assumption 2:}
+        One dollar reduction in cash-on-hand is equivalent to one dollar decrease in dischargeable debt
+    \end{alertblock}
+    \endgroup
+
+    
+    \begingroup
+    \setbeamercolor{frametitle}{fg=red}
+    \begin{alertblock}{Critique}
+        The point of debt fogiveness is that lender should not expect to recoup debt anyway, making it particuarly effective during crises
+    \end{alertblock}
+    \endgroup
+    
+    \textcolor{blue}{$\rightarrow$} Say lender thinks borrower has 50\% probability of paying back, then discharging \$1K debt only costs \$500, so liquidity effect should be halved
+    
+\end{frame}
+
+% \begin{frame}{Comment: Debt Forgiveness on Stressed Borrowers}
+
+% Debt forgiveness (out of bankruptcy) is beneficial because lender does not expect to get paid back anyway
+
+% \vspace{0.3cm}
+
+% \begin{itemize}
+%     \item Reinterpret decrease in generosity of bankruptcy as lowering principal on outstanding debt
+%     \item If borrower is about to default, then face value of debt is far below par
+%     \item Forgiving \$1K in principal may cost far less than giving out a \$1K stimulus check
+%     \item Comparison between moral hazard and liquidity effect ignores this
+%     \item Assumes borrower behaves as if they will pay back debt
+% \end{itemize}
+
+% \vspace{0.3cm}
+
+% \textcolor{blue}{$\rightarrow$} Debt fogiveness may be more efficient at reducing filing particularly in crises
+
+% \end{frame}
+
+\begin{frame}
+    \centering
+    \vfill
+    {\usebeamercolor[fg]{frametitle}\Huge\bfseries Appendix}
+    \vfill
+\end{frame}
+
+\begin{frame}{References}
+    \footnotesize
+    \begin{thebibliography}{9}
+        \bibitem[Chatterjee et~al.(2007)]{chatterjee2007}
+        % Wiley citation details, standardized to author--year format.
+        % https://onlinelibrary.wiley.com/doi/10.1111/j.1468-0262.2007.00806.x
+        Chatterjee, S., Corbae, D., Nakajima, M., and R\'{i}os-Rull, J.-V. (2007).
+        ``A Quantitative Theory of Unsecured Consumer Credit with Risk of Default.''
+        \textit{Econometrica}, 75(6), 1525--1589.
+        \url{https://doi.org/10.1111/j.1468-0262.2007.00806.x}
+
+        \bibitem[Geanakoplos(2010)]{geanakoplos2010}
+        % NBER and University of Chicago Press citation details, standardized to author--year format.
+        % https://www.nber.org/books-and-chapters/nber-macroeconomics-annual-2009-volume-24/leverage-cycle
+        Geanakoplos, J. (2010).
+        ``The Leverage Cycle.''
+        \textit{NBER Macroeconomics Annual}, 24(1), 1--66.
+        \url{https://doi.org/10.1086/648285}
+
+        \bibitem[Indarte(2023)]{indarte2023}
+        % Wiley citation details, standardized to author--year format.
+        % https://onlinelibrary.wiley.com/doi/10.1111/jofi.13263
+        Indarte, S. (2023).
+        ``Moral Hazard versus Liquidity in Household Bankruptcy.''
+        \textit{The Journal of Finance}, 78(5), 2421--2464.
+        \url{https://doi.org/10.1111/jofi.13263}
+    \end{thebibliography}
+\end{frame}
+
+\end{document}

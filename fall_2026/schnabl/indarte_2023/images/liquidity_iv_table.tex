@@ -1,0 +1,42 @@
+% Include with \input{images/liquidity_iv_table.tex}.
+\begin{minipage}{\textwidth}
+\centering
+\textbf{IV Estimates of Filing Response to Liquidity}
+\par{\small NPV and Composition Adjusted}
+\par\smallskip
+{\scriptsize
+\setlength{\tabcolsep}{9pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccc@{}}
+\hline
+\hline
+ & (1) & (2) & (3) & (4) \\
+\hline
+\multicolumn{5}{c}{\rule{0pt}{2.6ex}\textbf{Panel A: Second stage} (Dependent Variable: Bankruptcy)} \\[0.08cm]
+\hline
+Mortgage Payment & $11.81^{***}$ & $11.01^{***}$ & $14.83^{***}$ & $12.59^{***}$ \\
+ & (2.96) & (3.22) & (3.37) & (3.47) \\[0.1cm]
+\hline
+\multicolumn{5}{c}{\rule{0pt}{2.6ex}\textbf{Panel B: First stage} (Dependent Variable: Mortgage Payment)} \\[0.08cm]
+\hline
+Index Rate & $4{,}866.52^{***}$ & $4{,}671.64^{***}$ & $5{,}136.90^{***}$ & $5{,}179.40^{***}$ \\
+ & (287.82) & (312.31) & (361.54) & (367.44) \\
+\hline
+Stage 1 F-Statistic & 285.89 & 223.76 & 201.88 & 198.69 \\
+Observations & 1,059,194 & 1,059,194 & 1,059,194 & 1,059,194 \\
+\hline
+Time FE & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+County FE & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+Loan Age FE & & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+Loan Age $\times$ Time FE & & & $\checkmark$ & $\checkmark$ \\
+County $\times$ Time FE & & & & $\checkmark$ \\
+\hline
+\hline
+\end{tabular*}
+}
+\par\smallskip
+{\tiny\raggedright
+Source: Indarte (2023), Table III. NPV and DFL composition adjustments applied; standard errors clustered by county. First-stage coefficients measure dollar changes in the NPV of mortgage payments per percentage-point change in the index rate.
+Controls: ARM margin, original payment, origination FICO and LTV, log mortgage balance, and log home equity.
+\par}
+\end{minipage}
