@@ -9,13 +9,19 @@
 \begin{document}
 \section{Exercise I: The Deposits Channel}
 
+\subsection{Results}
+
+In regressing deposit beta on spread beta, I found a coefficient of -3.85 (0.203) compared with -3.610 (0.203) in DSS (2017). My average spread beta is 0.576 compared with 0.540 in DSS (2017). The full results are included in appendix \ref{appendix:results}.
+
 \subsection{Robustness}
 
-Robustness tests fall into two main categories: methodological and economic. The methodological robustness tests show that winsorizing and adding FFR lags is important for the magnitude. Although the result dissapears without winsorizing, I think it is a reasonable methodology because some betas have very large aboslute values due to the instability of linear regressions in small samples. Windsorizing is simply reducing the large amounts of noise. Adding lags to the FFR only increases the power of the relationship, as would be expected since changes in the FFR are persistent[?].
+Robustness tests fall into two main categories: methodological and economic. The methodological robustness tests show that winsorizing and adding FFR lags is important for the magnitude. Although the result dissapears without winsorizing, I think it is a reasonable methodology because some betas have very large aboslute values due to the instability of linear regressions in small samples. Windsorizing is simply reducing the large amounts of noise. Adding lags to the FFR only increases the power of the relationship, as would be expected since the estimates of beta should be more accruate because changes in the FFR might affect deposits with a lag.
 
 Taking the methodology as correct, the results are extremely economically robust. They are quite constant over time and across bank characteristics like leverage, uninsured deopsit share, deposit funding share, and assets. This economic robustness also supports the methodological choices.
 
-Finally, I wanted study whether spread beta predicts deposit beta more strongly for banks that face more comeptition from money market funds. I capture competition from money market funds with ``MMF beta" or the beta between change in deposits and change in MFF assets. Likely there is a problem with the measurement of MMF beta is not good enough, but the results go the opposite direction as would be expected.
+% Finally, I wanted to test whether the results are just being driven by competition with money market funds. Perhaps the deposit spread increases when MMF assets go down. 
+% study whether spread beta predicts deposit beta more strongly for banks that face more comeptition from money market funds. I capture competition from money market funds with ``MMF beta" or the beta between change in deposits and change in MFF assets. Likely there is a problem with the measurement of MMF beta is not good enough, but the results go the opposite direction as would be expected.
+The robustness results can be found in appendix \ref{appendix:robustness}.
 
 \subsection{Refereeing with AI}
 
@@ -77,9 +83,19 @@ Ultimately the coefficients between the two replications are so close that the d
     \end{minipage}
 \end{table}
 
+\subsection{AI Audit Summary}
+
+The AI mostly made the correct decisions because it was able to see the underlying paper, and I asked it to iterate on its decision making until it got close to the correct coefficient. As such, the discrepencies in methodology were not important for the result. It is possible, however the AI could have made a bunch of wrong decisions that happened to give the correct result, but this did not seem to happen here. 
+
+The main shortcoming of the AI was that its code was much less organized than the original replication. This would make it more difficult to adjust for future work, and makes the code much more difficult to read.
+
 \section{Excercise III: Out of Sample}
 
+
 \subsection{Mean Beta Comparison}
+
+The average cycle beta is slightly lower than the average beta in the 1994 to 2013 sample.
+
 \begin{table}[H]
     \centering
     \caption{Mean spreads}
@@ -88,6 +104,9 @@ Ultimately the coefficients between the two replications are so close that the d
 \end{table}
 
 \subsection{Beta Persistence}
+
+Regressing the cycle spread beta on the original sample spread beta gives a relatively small and barely significant positive coefficient. This suggests that the betas are only somewhat persistent. Survivorship bias might bias this coefficient upwards because banks whose spread betas fall signifncantly may exit because they do not have enough market power to continue.
+
 \begin{table}[H]
     \centering
     \caption{Beta persistence}
@@ -96,6 +115,10 @@ Ultimately the coefficients between the two replications are so close that the d
 \end{table}
 
 \subsection{Out of Sample Results}
+
+The result from DSS (2016) holds in the post-COVID hiking cycle. In fact the relationship between bank betas and deposit outflows was even stronger during the recent hiking cycle. Perhaps because of the short sample, some of the results are no longer significant during the hiking cycle like the impact of deposit spread beta on the beta of loans and real estate loans.
+
+
 \begin{table}[H]
     \centering
     \caption{Out of sample results: All banks}
@@ -107,4 +130,106 @@ Ultimately the coefficients between the two replications are so close that the d
 
 \subsection{External Validity}
 
+Overall the results hold in the out of sample hiking episode following COVID. This provides evidence for the external validity of the results. Of course, there are many other forms of external validity than surviving in different time periods. For example, perhaps the relationship does not hold in other countries or in banking systems where there is more competition.
+
+\section{Excercise IV: Interest Rate Risk in Banking}
+
+\subsection{DeMarzo, Krishnamurthy, and Nagel (2024) replication}
+
+\begin{table}[H]
+    \centering
+    \caption{Panel A: Regression in levels}
+    \label{tab:dkn_levels}
+    \input{results/dkn_comparison/levels.tex}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Panel B: Regression in changes}
+    \label{tab:dkn_changes}
+    \input{results/dkn_comparison/changes.tex}
+\end{table}
+
+\subsection{Comparison to Drechsler, Savov, and Schnabl (2021)}
+
+Drechsler, Savov, and Schnabl (2021) estimate that the interest expense beta is 0.345. Although the estimates are relatively similar, AI suggests the following differences in the regressions:
+
+\begin{itemize}
+    \item DSS averages bank-level betas, whereas DKN computes aggregate beta
+    \item DSS controls for FFR lags, whereas DKN control for swaps
+    \item DSS measures total interest expense, whereas DKN isolates deposits
+    \item DSS sample runs from 1984-2017, whereas DKN extends sample through 2021Q2
+\end{itemize}
+
+Decomposing the effects of these differences shows that switching from deposits to total expenses and doing the computation at the bank level lowers the coefficient whereas running the regression in first differences and adding in the FFR lags increases the coefficient. Overall the two effects lead the coefficient in DSS to increase by about 40\%. 
+
+\begin{table}[H]
+    \centering
+    \caption{Sequential comparison of DKN and DSS estimates}
+    \label{tab:dss_dkn_comparison}
+    \resizebox{\textwidth}{!}{%
+        \input{results/dss_dkn_compare/tables/comparison.tex}%
+    }
+    \par\smallskip
+    \begin{minipage}{\textwidth}
+        \footnotesize
+        Notes: Columns (1)--(2) reports coefficient from DKN in levels and changes. Column (3) replaces deposits with total interest expenses relative to average assets. Column (4) adds in controls for lags of the FFR as is done in the bank-level regressions in DSS. Column (5) averages bank-level betas which are computed controlling for FFR lags. Column (6) restricts the sample to 1984--2017. Column (7) reports the published DSS estimate.
+    \end{minipage}
+\end{table}
+
+
+
+\clearpage
+\appendix
+\section{Results}\label{appendix:results}
+\subsection{Data Pulling}
+\begin{center}
+ \includegraphics[width=\textwidth]{results/quarterly_changes.pdf}
+\end{center}
+
+\subsection{Computing betas}
+
+\begin{center}
+\input{results/beta_comparison.tex}
+\end{center}
+
+\clearpage
+\subsection{Regression results}
+\begin{center}
+ \textbf{Panel A: All banks}\par\smallskip
+ \resizebox{\textwidth}{!}{\input{results/beta_regs/tables/table_ix_panel_a.tex}}
+ \par\medskip
+ \textbf{Panel B: Largest 5\% of banks}\par\smallskip
+ \resizebox{\textwidth}{!}{\input{results/beta_regs/tables/table_ix_panel_b.tex}}
+ \par\medskip
+ \clearpage
+ \includegraphics[width=\textwidth]{results/beta_regs/figure_vi.pdf}
+\end{center}
+\clearpage
+\section{Robustness}\label{appendix:robustness}
+
+\begin{center}
+ \textbf{Rolling five-year sample windows}\par\smallskip
+ \includegraphics[width=\textwidth]{results/beta_regs_robustness/rolling_coefficients.pdf}
+ \par\medskip
+ \textbf{Winsorization of estimated bank betas}\par\smallskip
+ \includegraphics[width=\textwidth]{results/beta_regs_robustness/winsorization_coefficients.pdf}
+ \par\smallskip
+ {\footnotesize\input{results/beta_regs_robustness/winsorization_note.tex}}
+\end{center}
+\clearpage
+\begin{center}
+ \textbf{Bank-characteristic quartiles}\par\medskip
+ \resizebox{\textwidth}{!}{\input{results/beta_regs_robustness/quartile_coefficients.tex}}
+\end{center}
+\begin{center}
+ \textbf{Minimum bank-history requirement}\par\smallskip
+ \includegraphics[width=\textwidth]{results/beta_regs_robustness/minimum_quarters_coefficients.pdf}
+\end{center}
+\clearpage
+\begin{center}
+ \textbf{Number of FFR lags}\par\smallskip
+ \includegraphics[width=\textwidth]{results/beta_regs_robustness/lag_coefficients.pdf}
+\end{center}
+\clearpage
 \end{document}

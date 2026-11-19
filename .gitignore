@@ -49,7 +49,7 @@ __pycache__/
 *.rar
 *.tar
 
-# LaTeX build artifacts (keep .tex and .bib sources)
+# LaTeX sources and build artifacts (tracked files remain tracked)
 *.aux
 *.bbl
 *.bcf
@@ -81,3 +81,6 @@ Thumbs.db
 *.ado
 *.txt
 *.png
+
+# Ignore new LaTeX files, including generated tables
+*.tex

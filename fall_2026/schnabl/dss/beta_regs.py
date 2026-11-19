@@ -153,6 +153,19 @@ def make_binscatters(betas: pd.DataFrame, output: Path, name: str = "figure_vi")
     return bins
 
 
+def make_spread_histogram(betas: pd.DataFrame, output: Path):
+    """Plot original spread betas, winsorized by the bank-beta estimator."""
+    output.mkdir(parents=True, exist_ok=True)
+    fig, ax = plt.subplots(figsize=(9, 5), layout="constrained")
+    ax.hist(betas.spread_beta.dropna(), bins=60, color="#176087",
+            edgecolor="white", linewidth=0.4)
+    ax.set(xlabel=r"Spread-$\beta$", ylabel="Number of banks")
+    ax.spines[["top", "right"]].set_visible(False)
+    for extension in ("pdf", "png"):
+        fig.savefig(output / f"spread_beta_histogram.{extension}", dpi=180)
+    plt.close(fig)
+
+
 def write_beta_comparison(betas: pd.DataFrame):
     """Update the writeup's comparison table from the current bank estimates."""
     summary = {
@@ -186,6 +199,7 @@ def main(panel: pd.DataFrame | None = None, *, beta_tail=0.05):
         panel=panel, include_loan_categories=True, beta_tail=beta_tail
     )
     betas = classify_large_banks(betas)
+    make_spread_histogram(betas, output)
     if beta_tail == 0.05:
         write_beta_comparison(betas)
     bins = make_binscatters(betas, output)

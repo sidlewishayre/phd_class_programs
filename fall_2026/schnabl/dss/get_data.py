@@ -11,6 +11,7 @@ from settings import REUSABLE_CODE_DIR
 
 sys.path.append(str(REUSABLE_CODE_DIR))
 
+import shutil
 import tempfile
 import zipfile
 from pathlib import Path
@@ -245,7 +246,11 @@ def load_historical_call_reports(
 
 def fred_cpi() -> pd.Series:
     """Load annual FRED CPI, normalized to 2010 = 1 for real assets."""
-    monthly = get_fred_series("CPIAUCSL")
+    path = settings.FRED_CACHE_DIR / "CPIAUCSL.csv"
+    if path.exists():
+        monthly = pd.read_csv(path, index_col="observation_date", parse_dates=True)["CPIAUCSL"]
+    else:
+        monthly = get_fred_series("CPIAUCSL")
     annual = monthly.groupby(monthly.index.year).mean()
     return (annual / annual.loc[2010]).rename("cpi").rename_axis("year")
 
@@ -284,7 +289,7 @@ def fdic_records() -> pd.DataFrame:
     path = settings.FDIC_FILE
     if not path.exists():
         raise FileNotFoundError(
-            f"{path} is required: chartertype is missing in the supplied 2001–2013 data."
+            f"{path} is required for the 2001–2013 FDIC charter-class filter."
         )
     d = pd.read_csv(
         path,
@@ -297,27 +302,87 @@ def fdic_records() -> pd.DataFrame:
     return d
 
 
+def _read_ny_fed_reports(kind, columns, start, end, chunksize):
+    """Extract the publisher's Stata file and retain the requested quarters."""
+    release = f"call-reports-{kind}-Jan2026"
+    cache = settings.NY_FED_CALL_REPORTS_DIR / f"{release}.zip"
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=cache.parent) as directory:
+        if not cache.exists():
+            download = Path(directory) / cache.name
+            url = f"{settings.NY_FED_CALL_REPORTS_URL}/{release}"
+            with requests.get(url, stream=True, timeout=120) as response:
+                response.raise_for_status()
+                with download.open("wb") as target:
+                    shutil.copyfileobj(response.raw, target)
+            with zipfile.ZipFile(download):
+                pass
+            download.replace(cache)
+        with zipfile.ZipFile(cache) as archive:
+            member, = [name for name in archive.namelist() if name.endswith(".dta")]
+            stata_file = Path(directory) / "reports.dta"
+            with archive.open(member) as source, stata_file.open("wb") as target:
+                shutil.copyfileobj(source, target)
+        with pd.read_stata(stata_file, columns=columns, convert_categoricals=False,
+                           chunksize=chunksize) as reader:
+            return pd.concat(
+                [chunk.loc[chunk.date.between(start, end)] for chunk in reader],
+                ignore_index=True,
+            )
+
+
 def load_call_reports(
     chunksize: int = 25000,
     columns: list[str] | None = None,
+    *,
+    start: str = "1994Q1",
+    end: str = "2013Q4",
 ) -> pd.DataFrame:
-    """Read selected columns, retaining only the analysis window plus its lag."""
+    """Load New York Fed Call Reports with local aliases and YTD expenses."""
     if chunksize <= 0:
         raise ValueError("chunksize must be positive")
-    pieces = []
-    with pd.read_stata(
-        settings.CALL_REPORTS_FILE,
-        columns=list(dict.fromkeys(COLUMNS + (columns or []))),
-        convert_categoricals=False,
-        chunksize=chunksize,
-    ) as reader:
-        for chunk in reader:
-            keep = chunk.yq.between("1993-10-01", "2013-12-31")
-            if keep.any():
-                pieces.append(chunk.loc[keep].copy())
-    if not pieces:
+    start = max(pd.Period(start, freq="Q"), pd.Period("1994Q1")).start_time
+    end = pd.Period(end, freq="Q").end_time
+    aliases = {
+        "id_rssd": "rssdid", "id_fdic_cert": "cert", "date": "yq",
+        "chtr_type_cd": "chartertype", "nm_lgl": "name", "state_abbr_nm": "state",
+        "domestic_dep": "domdep", "foreign_dep": "foreigndep",
+        "deposits": "totdep", "ln_tot": "loans", "ln_tot_gross": "loans_unearnedinc",
+        "ln_re": "reloans", "ln_ci": "ciloans", "liab_tot_unadj": "liabilities",
+        "ytdint_exp_dep": "intexpalldep",
+    }
+    balance = _read_ny_fed_reports(
+        "balance-sheets",
+        [field for field in aliases if field != "ytdint_exp_dep"]
+        + ["ent_type_cd", "assets", "securities", "equity", "insured_deposits"],
+        start, end, chunksize,
+    )
+    income = _read_ny_fed_reports(
+        "income-statements", ["id_rssd", "date", "ytdint_exp_dep", "ytdint_exp_fgn"],
+        start, end, chunksize,
+    )
+    d = balance.merge(income, on=["id_rssd", "date"], how="left",
+                      validate="one_to_one").rename(columns=aliases)
+    if d.empty:
         raise ValueError("No Call Report observations in the requested window")
-    return pd.concat(pieces, ignore_index=True)
+    d["intexpdomdep"] = d.intexpalldep - d.ytdint_exp_fgn.fillna(0)
+    inferred_foreign = (d.totdep - d.domdep).where(lambda x: x.ge(0))
+    d["foreigndep"] = d.foreigndep.combine_first(inferred_foreign)
+    d["commercial_bank"] = d.ent_type_cd.eq(1).where(
+        d.ent_type_cd.notna() & d.yq.lt("2001-01-01")
+    )
+    d["data_source"] = "ny_fed"
+    d["expense_timing"] = "ytd"
+    # Preserve the robustness input as an uninsured domestic deposit proxy.
+    d["uninsureddep2"] = (d.domdep - d.insured_deposits).where(
+        d.insured_deposits.gt(0) & d.insured_deposits.le(d.domdep)
+    )
+    for column in columns or []:
+        if column not in d:
+            d[column] = np.nan
+    return d[list(dict.fromkeys(
+        COLUMNS + (columns or []) + ["commercial_bank", "data_source", "expense_timing"]
+    ))]
 
 
 def detect_expense_input(d: pd.DataFrame) -> tuple[str, dict]:
@@ -403,8 +468,8 @@ def clean_panel(
         validate="many_to_one",
         indicator="fdic_match",
     )
-    # Use the Chicago Fed's historical entity type before 2001 and the cached
-    # FDIC charter class thereafter. CB describes community-bank status only.
+    # Use the historical entity type before 2001 and the cached FDIC
+    # charter class thereafter. CB describes community-bank status only.
     fdic_commercial = d.BKCLASS.isin(["N", "NM", "SM"]).where(d.BKCLASS.notna())
     if "commercial_bank" in d:
         d["commercial_bank"] = d.commercial_bank.combine_first(fdic_commercial)
@@ -424,10 +489,11 @@ def clean_panel(
             audit.update(detection)
     audit["expense_input"] = expense_input
     audit["historical_ytd_rows"] = int(historical.sum())
-    audit["expense_input_by_source"] = {
-        "local_stata": expense_input,
-        "chicago_fed": "ytd",
-    }
+    if "data_source" in d:
+        audit["expense_input_by_source"] = {
+            source: "ytd" if historical.loc[group.index].all() else expense_input
+            for source, group in d.groupby("data_source")
+        }
     # Compute both source flows before filtering or computing cross-source lags.
     local_flow = quarterly_expense(d, "intexpalldep", expense_input)
     ytd_flow = quarterly_expense(d, "intexpalldep", "ytd")
@@ -526,24 +592,12 @@ def get_data(
     survive in the returned panel. ``output_columns`` optionally restricts the
     returned fields, including derived measures. Reads are chunked and restricted to the time
     window before concatenation. Cleaning diagnostics are in ``df.attrs['audit']``.
-    Missing Chicago Fed archives may be fetched and cached. Historical FDIC
-    charter classes for the local source must already exist.
+    New York Fed archives are downloaded and cached on first use. The source
+    starts at 1994Q1, including when include_presample is requested.
     """
     rates = fred_rates(refresh=refresh_fred)
     fdic = fdic_records()
     d = load_call_reports(chunksize=chunksize, columns=columns)
-    d["data_source"] = "local_stata"
-    d["expense_timing"] = "local"
-    first_local = pd.Period(d.yq.min(), freq="Q")
-    if first_local > pd.Period("1994Q1"):
-        end = min(first_local - 1, pd.Period("2000Q4"))
-        historical = load_historical_call_reports(
-            columns=columns,
-            end=str(end),
-            start="1993Q2" if include_presample else "1994Q1",
-        )
-        # Fill only quarters preceding the first supplied local observation.
-        d = pd.concat([historical, d], ignore_index=True)
     panel, audit = clean_panel(
         d, rates, fdic, expense_input, include_presample=include_presample
     )
@@ -564,7 +618,7 @@ PAPER_STOCKS = {
 
 
 def fred_mmf_assets(refresh=False) -> pd.Series:
-    """Quarter-end household MMF share holdings, millions of USD, NSA (FRED)."""
+    """Quarter-end total MMF financial assets, millions of USD, NSA (FRED)."""
     if refresh or not settings.MMF_AUM_CACHE_FILE.exists():
         assets = get_fred_series(settings.MMF_FRED_SERIES).rename("mmf_assets")
         assets.index.name = "date"
@@ -579,37 +633,55 @@ def fred_mmf_assets(refresh=False) -> pd.Series:
     return assets.sort_index()
 
 
-def get_mmf_panel(panel=None, mmf_assets=None, *, ffr_lags=4, rates=None) -> pd.DataFrame:
-    """Match bank deposit and MMF quarterly log growth, 1994--2013.
+def fred_aggregate_deposits(refresh=False) -> pd.Series:
+    """Last weekly observation per quarter, commercial-bank deposits in millions.
 
-    Domestic deposit growth matches the existing deposit-flow-beta measure.
-    Household MMF holdings growth proxies for flows, not return-adjusted net subscriptions.
-    Return contemporaneous MMF growth and FFR changes at lags zero through four.
-    Neither quarterly inputs nor final betas are winsorized here.
+    FRED DPSACBW027NBOG is NSA and reported in billions of dollars.
     """
-    d = get_data(include_presample=True) if panel is None else panel.copy()
-    d["quarter"] = pd.PeriodIndex(d.quarter, freq="Q")
-    if d.cert.isna().any() or d.duplicated(["cert", "quarter"]).any():
-        raise ValueError("Require unique nonmissing bank-quarter keys")
-    d = d.sort_values(["cert", "quarter"])
-    groups = d.groupby("cert", sort=False)
-    adjacent = d.quarter.astype("int64").sub(groups.quarter.shift().astype("int64")).eq(1)
-    logged = np.log(d.domdep.where(d.domdep.gt(0)))
-    d["depositflow"] = 100 * logged.groupby(d.cert).diff().where(adjacent)
+    path = settings.MMF_DEPOSIT_CACHE_FILE
+    if refresh or not path.exists():
+        deposits = get_fred_series(settings.MMF_DEPOSIT_SERIES).rename("deposits")
+        deposits.index.name = "date"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        deposits.to_csv(path)
+    else:
+        deposits = pd.read_csv(path, index_col="date", parse_dates=True).deposits
+    deposits = deposits.sort_index()
+    return deposits.groupby(deposits.index.to_period("Q")).last() * 1000
+
+
+def compute_mmf_share_inputs(assets, deposits):
+    """Both inputs are quarterly stocks in millions; changes are percentage points."""
+    quarters = pd.period_range("1993Q4", "2013Q4", freq="Q")
+    data = pd.DataFrame({"mmf_assets": assets, "aggregate_deposits": deposits}).reindex(quarters)
+    valid = data.mmf_assets.gt(0) & data.aggregate_deposits.gt(0)
+    data["mmf_share"] = (data.mmf_assets / (data.mmf_assets + data.aggregate_deposits)).where(valid)
+    data["d_mmf_share"] = 100 * data.mmf_share.diff()
+    if data[["mmf_assets", "aggregate_deposits", "mmf_share"]].isna().any().any():
+        raise ValueError("Missing aggregate MMF/deposit stocks in the estimation window")
+    return data
+
+
+def get_mmf_panel(panel=None, mmf_assets=None, deposits=None, *, ffr_lags=4) -> pd.DataFrame:
+    """Bank spread levels and MMF share changes, with current/lagged FFR changes.
+
+    Spread uses the same annualized domestic deposit rate as spread_beta.
+    MMF share is MMF assets / (MMF assets + aggregate commercial-bank deposits).
+    Its quarterly first difference is measured in percentage points.
+    Inputs are untrimmed; the beta estimator winsorizes final bank coefficients.
+    """
+    d = get_beta_panel(panel=panel, max_lag=ffr_lags)
     assets = fred_mmf_assets() if mmf_assets is None else mmf_assets.copy()
-    assets = assets.reindex(pd.period_range(
-        pd.Period("1993Q4"), "2013Q4", freq="Q"))
-    growth = 100 * np.log(assets.where(assets.gt(0))).diff()
-    d["mmfflow"] = d.quarter.map(growth)
-    d["mmf_assets"] = d.quarter.map(assets)
-    d["mmf_beta_y"] = d.depositflow
-    rates = fred_rates() if rates is None else rates
-    ffr_change = rates.fed_funds_target_end_pct.diff()
-    for lag in range(ffr_lags + 1):
-        d[f"ffr_change_l{lag}"] = d.quarter.map(ffr_change.shift(lag))
-    keep = d.quarter.between(pd.Period("1994Q1"), pd.Period("2013Q4"))
-    return d.loc[keep, ["cert", "quarter", "depositflow", "mmfflow", "mmf_assets",
-                        "mmf_beta_y", *[f"ffr_change_l{i}" for i in range(ffr_lags + 1)]]].copy()
+    deposits = fred_aggregate_deposits() if deposits is None else deposits.copy()
+    share_inputs = compute_mmf_share_inputs(assets, deposits)
+    settings.MMF_DIR.mkdir(parents=True, exist_ok=True)
+    share_inputs.to_csv(settings.MMF_SHARE_INPUT_FILE, index_label="quarter")
+    d["mmfflow"] = d.quarter.map(share_inputs.d_mmf_share)
+    d["mmf_assets"] = d.quarter.map(share_inputs.mmf_assets)
+    d["mmf_share"] = d.quarter.map(share_inputs.mmf_share)
+    d["mmf_beta_y"] = d.deposit_spread
+    return d[["cert", "quarter", "deposit_spread", "mmfflow", "mmf_assets", "mmf_share",
+              "mmf_beta_y", *[f"x{i}" for i in range(ffr_lags + 1)]]].copy()
 
 
 def load_mmf_control_betas() -> pd.DataFrame:
@@ -641,9 +713,8 @@ def get_robustness_panel(max_lag=5) -> pd.DataFrame:
     """Load beta inputs and quarterly characteristics for robustness exercises.
 
     Leverage is assets/equity; funding share is total deposits/liabilities.
-    Uninsured share uses the supplied uninsureddep2 alias/domestic deposits:
-    its construction is undocumented, so it is explicitly a proxy. Historical
-    uninsured observations are unavailable and are never filled with zeros.
+    Uninsured share uses domestic deposits less reported insured deposits
+    as a proxy. The share is missing where insured deposits are unavailable.
     """
     panel = get_data(
         columns=["reloans", "ciloans", "intexpdomdep", "loans_unearnedinc",
@@ -698,9 +769,15 @@ def get_beta_panel(panel=None, rates=None, *, max_lag=4, start="1994Q1", end="20
     denominator = g.domestic_deposits.shift().where(adjacent)
     rate = 400 * d.expense_q / denominator.where(denominator.gt(0))
     spread = d.ff_tar_quar_avg - rate
+    d["deposit_spread"] = spread
     d["spread_beta_y"] = spread.groupby(d.cert).diff().where(adjacent)
     d["x0"] = d.ff_tar.groupby(d.cert).diff().where(adjacent)
     if start == "1994Q1":
+        # The target is common to all banks. Seed the first policy change
+        # from FRED so 1995Q1 has all four lags without 1993 bank reports.
+        first = pd.Period(start)
+        targets = rates.fed_funds_target_end_pct.reindex([first - 1, first])
+        d.loc[d.quarter.eq(first), "x0"] = targets.diff().iloc[-1]
         d = d.loc[d.quarter.between(pd.Period(start), pd.Period(end))].copy()
     g = d.groupby("cert", sort=False)
     qid = d.quarter.astype("int64")
@@ -728,20 +805,50 @@ def get_out_of_sample_panel():
     """Recent quarterly reports with the existing endpoint commercial-bank filter."""
     columns = ["cert", "yq", "assets", "domdep", "intexpdomdep", "loans",
                "loans_unearnedinc", "securities", "reloans", "ciloans"]
-    pieces = []
-    with pd.read_stata(settings.CALL_REPORTS_FILE, columns=columns,
-                       convert_categoricals=False, chunksize=25000) as reader:
-        for chunk in reader:
-            pieces.append(chunk.loc[chunk.yq.between("2021-01-01", "2023-12-31")])
-    d = pd.concat(pieces, ignore_index=True)
+    d = load_call_reports(columns=columns, start="2021Q1", end="2023Q4")
+    d["quarter"] = d.yq.dt.to_period("Q")
+    d["qid"] = d.quarter.astype("int64")
+    d = d.sort_values(["rssdid", "quarter"])
+    d["intexpdomdep"] = quarterly_expense(d, "intexpdomdep", "ytd")
     fdic = pd.read_csv(settings.OUT_OF_SAMPLE_FDIC_FILE)
     eligible = fdic.assign(commercial=fdic.BKCLASS.isin(["N", "NM", "SM"]))
     eligible = eligible.groupby("CERT").commercial.agg(["all", "count"])
     d = d[d.cert.isin(eligible.index[eligible["all"] & eligible["count"].eq(2)])].copy()
-    d["quarter"] = d.yq.dt.to_period("Q")
     d["expense_timing"] = "quarterly"
     targets = pd.read_csv(settings.OUT_OF_SAMPLE_RATES_FILE, index_col="date", parse_dates=True)
     midpoint = (targets.DFEDTARU + targets.DFEDTARL) / 2
     rates = midpoint.groupby(midpoint.index.to_period("Q")).agg(["mean", "last"])
     rates.columns = ["fed_funds_target_pct", "fed_funds_target_end_pct"]
     return d, rates
+
+
+def load_dkn_call_reports(start, end, chunksize=25000):
+    """Read only the New York Fed fields needed for aggregate deposit spreads."""
+    first = pd.Period(start, freq="Q").start_time
+    last = pd.Period(end, freq="Q").end_time
+    keys = ["id_rssd", "date"]
+    balance = _read_ny_fed_reports(
+        "balance-sheets",
+        keys + ["ent_type_cd", "assets", "deposits", "domestic_dep"],
+        first, last, chunksize,
+    )
+    income = _read_ny_fed_reports(
+        "income-statements", keys + ["ytdint_exp_dep"], first, last, chunksize,
+    )
+    return balance.merge(income, on=keys, how="left", validate="one_to_one")
+
+
+def load_dkn_rates():
+    """Read the cached monthly effective fed funds rate and Treasury yields."""
+    rates = pd.read_csv(settings.DKN_RATES_FILE, parse_dates=["observation_date"])
+    return rates.set_index("observation_date")[["FEDFUNDS", "GS1", "GS5"]]
+
+
+def load_dss_dkn_reports():
+    """DKN inputs plus publisher-labeled total YTD interest expense."""
+    reports = load_dkn_call_reports("1984Q1", "2021Q2")
+    income = _read_ny_fed_reports(
+        "income-statements", ["id_rssd", "date", "ytdint_exp"],
+        pd.Timestamp("1984-01-01"), pd.Timestamp("2021-06-30"), 25000,
+    )
+    return reports.merge(income, on=["id_rssd", "date"], validate="one_to_one")

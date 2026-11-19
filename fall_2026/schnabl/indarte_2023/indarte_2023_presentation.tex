@@ -43,7 +43,7 @@ Why do people default?
     \item Popular understanding: because you cannot pay
     \item But default subtle in general equilibrium
     \begin{itemize}
-        \item assuming complete markets and cost of default, default is inefficient
+        \item With complete markets and a positive cost of default, default is inefficient
     \end{itemize}
 \end{itemize}
 
@@ -57,7 +57,7 @@ Why do people default?
     Effect & Transfer & Consumption smoothing \\
     Literature & Geanakoplos (2010) & Chatterjee et al. (2007) \\
     Amplification & Leverage cycle & Procyclical credit \\
-    Policy & Debt forgiveness & Liquidity injection\\
+    Policy & Debt forgiveness & Cash transfers\\
     \hline
 \end{tabular}
 \end{frame}
@@ -73,10 +73,6 @@ Why do people default?
         Identify causal impact of the moral hazard and liquidity effects on filing
     \end{alertblock}
 
-    \vspace{0.3cm}
-
-    Causal estimate would quantify the trade-off between moral hazard and consumption smoothing
-
 \end{frame}
 
 \begin{frame}{Challenges}
@@ -85,8 +81,9 @@ Why do people default?
 
     \textbf{Moral Hazard:}
     \begin{itemize}
-        \item cross sectional variation has ommited variables that lower wealth and increase filing
+        \item cross-sectional variation has omitted variables that lower wealth and increase filing
         \begin{itemize}
+            \vspace{-0.4cm}
             \item[$\rightarrow$] overestimates effect
         \end{itemize}
         \item policy variation combines direct effect and GE effect of lending contraction
@@ -127,11 +124,11 @@ Why do people default?
 
 \textbf{Moral Hazard:}
 \begin{itemize}
-    \item \$1K decrease in generosity of bankruptcy reduces filing rate by \textbf{0.02pp}
+    \item \$1K decrease in generosity of bankruptcy reduces filing rate by \textbf{2.6\%}
 \end{itemize}
 \textbf{Liquidity:}
 \begin{itemize}
-        \item \$1K decrease in annual mortgage payment reduces filing rate by \textbf{0.09pp}
+        \item \$1K decrease in annual mortgage payment reduces filing rate by \textbf{12.6\%}
     \end{itemize}
 
 \vspace{0.3cm}
@@ -165,14 +162,14 @@ If you decrease dischargeable debt, \textbf{83\%} of filing response is due to \
     \end{adjustbox}
 \end{frame}
 
-\begin{frame}{Stilized Bankruptcy Balance Sheet}
+\begin{frame}{Stylized Bankruptcy Balance Sheet}
     \vspace{0.2cm}
     \centering
     \begin{adjustbox}{width=\textwidth,max totalheight=\textheight,center}
         \input{images/bankruptcy_balance_sheet.tex}
     \end{adjustbox}
     \par\smallskip
-    {\tiny\raggedright Note: Rough approximation of average filer's stilized balance sheet using U.S. Courts, 2025 BAPCPA  data.\par}
+    {\tiny\raggedright Note: Rough approximation of average filer's stylized balance sheet using U.S. Courts, 2025 BAPCPA  data.\par}
 \end{frame}
 
 \begin{frame}{Results: Moral Hazard Effect}
@@ -195,7 +192,7 @@ If you decrease dischargeable debt, \textbf{83\%} of filing response is due to \
     \textbf{Robustness Tests:}
 
     \begin{itemize}
-        \item Underwriting variables available at origination smoothly affects bankruptcy around kink
+        \item Underwriting variables available at origination affect bankruptcy smoothly around the kink.
         \item Manipulation of home equity before bankruptcy?
         \begin{itemize}
             \item Equity distance distribution smooth at kink
@@ -241,8 +238,6 @@ This gives the following measurement error adjustment:
 \end{itemize}
 }
 
-Perhaps with AI you could find home values from bankruptcy proceedings
-
 \end{frame}
 
 \begin{frame}{Results: Moral Hazard Effect}
@@ -275,16 +270,17 @@ Perhaps with AI you could find home values from bankruptcy proceedings
         \item With uncertainty, moral hazard effect \textbf{\UncertaintyMultiplier{}} times larger.
         \item Also with risk aversion, moral hazard effect \textbf{\RiskAversionMultiplier{}} times larger
     \end{itemize}
-    \textcolor{blue}{$\rightarrow$} After adjustment, moral hazard effect is as large as liquidity effect
+    \textcolor{blue}{$\rightarrow$} Under this adjustment, moral hazard effect is as large as liquidity effect
 
     \begin{center}
         \includegraphics[width=0.95\textwidth,height=0.52\textheight,keepaspectratio]{images/attenuation.png}
         \par\smallskip
     \end{center}
-    {\tiny Asumptions: standard devation in home price uncertainty of \$\MeasurementErrorSD{} (conservative estimate if household is as uncertain as econometrician); bankruptcy wealth of \$\BaselineWealth{}; CRRA risk-aversion coefficient of \RiskAversionCoefficient{}.}
+    {\tiny Assumptions: standard deviation in home price uncertainty of \$\MeasurementErrorSD{} (conservative estimate if household is as uncertain as econometrician); bankruptcy wealth of \$\BaselineWealth{}; CRRA risk-aversion coefficient of \RiskAversionCoefficient{}.}
 \end{frame}
 
 \begin{frame}{Comment: Debt Forgiveness on Stressed Borrowers}
+    \small
     \begin{alertblock}{Punchline:}
         If you decrease dischargeable debt, \textbf{83\%} of filing response is due to \textbf{liquidity}
     \end{alertblock}
@@ -292,14 +288,14 @@ Perhaps with AI you could find home values from bankruptcy proceedings
     \vspace{0.3cm}
 
     To convert empirical results into terms of dischargeable debt paper assumes:
-    \begin{alertblock}{Assumption 1:}
-        One dollar reduction in bankruptcy generosity is equivalent to one dollar decrease in dischargeable debt
-    \end{alertblock}
-    
     \begingroup
-    \setbeamercolor{frametitle}{fg=red}
-    \begin{alertblock}{Assumption 2:}
-        One dollar reduction in cash-on-hand is equivalent to one dollar decrease in dischargeable debt
+    \setbeamercolor{frametitle}{fg=black}
+    \begin{alertblock}{\textbf{Assumption 1:}} 
+        \textcolor{blue}{(Moral hazard effect)} A one-dollar increase in bankruptcy costs is equivalent to a one-dollar decrease in dischargeable debt
+    \end{alertblock}
+
+    \begin{alertblock}{\textbf{Assumption 2:}}
+        \textcolor{red}{(Liquidity effect)} A one-dollar reduction in cash-on-hand is equivalent to a one-dollar decrease in dischargeable debt
     \end{alertblock}
     \endgroup
 
@@ -307,12 +303,24 @@ Perhaps with AI you could find home values from bankruptcy proceedings
     \begingroup
     \setbeamercolor{frametitle}{fg=red}
     \begin{alertblock}{Critique}
-        The point of debt fogiveness is that lender should not expect to recoup debt anyway, making it particuarly effective during crises
+        The point of debt forgiveness is that lender should not expect to recoup debt anyway, making it particularly effective during crises
     \end{alertblock}
     \endgroup
     
-    \textcolor{blue}{$\rightarrow$} Say lender thinks borrower has 50\% probability of paying back, then discharging \$1K debt only costs \$500, so liquidity effect should be halved
-    
+    \noindent\textcolor{black}{$\rightarrow$}\enspace
+    Liquidity effect should be scaled by probability of not defaulting
+
+    \begin{center}
+        \input{images/economic_magnitudes.tex}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Conclusion}
+    \begin{itemize}
+        \item Great identification strategy, which uses RKD around homestead exemption
+        \item My interpretation (contrary to paper's) is that moral hazard effect is quite large
+        \item If so, cash transfers may not help lower bankruptcy as much as debt forgiveness
+    \end{itemize}
 \end{frame}
 
 % \begin{frame}{Comment: Debt Forgiveness on Stressed Borrowers}
@@ -331,9 +339,11 @@ Perhaps with AI you could find home values from bankruptcy proceedings
 
 % \vspace{0.3cm}
 
-% \textcolor{blue}{$\rightarrow$} Debt fogiveness may be more efficient at reducing filing particularly in crises
+% \textcolor{blue}{$\rightarrow$} Debt forgiveness may be more efficient at reducing filing particularly in crises
 
 % \end{frame}
+
+
 
 \begin{frame}
     \centering
